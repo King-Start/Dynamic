@@ -70,22 +70,19 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
 
-      # Подпись — отдельным шагом: ключ из секретов есть только здесь и сразу удаляется
+      # Подпись — отдельным шагом: ключ из секретов есть только здесь и сразу удаляется.
+      # Если секретов нет (или ключ не тот) — сборка НЕ падает: выгружается APK без подписи.
       - name: Подпись
         id: sign
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          RELEASE: ${{ steps.ver.outputs.release }}
-          UPDATE: ${{ steps.ver.outputs.update }}
         run: |
+          unsigned=app/build/outputs/apk/release/app-release-unsigned.apk
           if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" ]]; then
-            if [[ "$RELEASE" == true || "$UPDATE" == true ]]; then
-              echo "::error::Нет секретов KEYSTORE_BASE64 и KEYSTORE_PASSWORD — релиз без подписи не выпускается"
-              exit 1
-            fi
-            echo "::notice::Секретов с ключом нет (например, pull request из форка) — APK собран, но не подписан и не выложен"
+            echo "::notice::Секретов KEYSTORE_BASE64/KEYSTORE_PASSWORD нет — выгружаем APK без подписи"
             echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "artifact=$unsigned" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           ks="$RUNNER_TEMP/island.p12"
@@ -96,12 +93,15 @@ jobs:
           key=$(awk -F'SHA256: *' 'NF > 1 {gsub(":", "", $2); print tolower($2); exit}' <<<"$info")
           if [[ "$key" != "$SIGNING_CERT_SHA256" ]]; then
             echo "::error::В секрете KEYSTORE_BASE64 другой ключ ($key) — ожидался $SIGNING_CERT_SHA256"
-            exit 1
+            echo "::notice::Проверьте SIGNING_CERT_SHA256 и секреты — пока выгружаем APK без подписи"
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "artifact=$unsigned" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           echo "build-tools: $bt"
           mkdir -p out
-          "$bt/zipalign" -f 4 app/build/outputs/apk/release/app-release-unsigned.apk "$RUNNER_TEMP/aligned.apk"
+          "$bt/zipalign" -f 4 "$unsigned" "$RUNNER_TEMP/aligned.apk"
           "$bt/apksigner" sign --ks "$ks" --ks-type PKCS12 --ks-key-alias island \
             --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEYSTORE_PASSWORD \
             --out out/DynamicIsland.apk "$RUNNER_TEMP/aligned.apk"
@@ -111,16 +111,20 @@ jobs:
           got=$(awk 'tolower($0) ~ /certificate sha-256 digest:/ {print tolower($NF); exit}' <<<"$certs")
           if [[ "$got" != "$SIGNING_CERT_SHA256" ]]; then
             echo "::error::APK подписан не тем ключом ($got) — ожидался $SIGNING_CERT_SHA256"
-            exit 1
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "artifact=$unsigned" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           echo "signed=true" >> "$GITHUB_OUTPUT"
+          echo "artifact=out/DynamicIsland.apk" >> "$GITHUB_OUTPUT"
 
-      # Тестовые APK лежат неделю: потом пропадают сами, а версии для всех — в релизах
+      # APK выгружается всегда: подписанный, если были секреты, иначе без подписи.
+      # Лежит неделю, потом пропадает сам; версии для всех — в релизах.
       - uses: actions/upload-artifact@v4
-        if: steps.sign.outputs.signed == 'true'
         with:
           name: DynamicIsland-apk
-          path: out/DynamicIsland.apk
+          path: ${{ steps.sign.outputs.artifact }}
+          if-no-files-found: error
           retention-days: 7
 
   release:

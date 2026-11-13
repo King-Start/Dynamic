@@ -39,5 +39,24 @@ Penggabungan dua aplikasi dynamic island menjadi **satu aplikasi**:
 Proyek standar Gradle Android (AGP 8.7.3, Kotlin 2.1.0, Compose, minSdk 26, targetSdk 35):
 
 ```bash
-./gradlew assembleRelease   # atau assembleDebug
+./gradlew assembleRelease   # или assembleDebug
 ```
+
+## GitHub Actions (CI)
+
+Workflow `.github/workflows/android.yml` **не падает без ключа подписи**: APK выгружается всегда.
+- Без секретов `KEYSTORE_BASE64`/`KEYSTORE_PASSWORD` → собирается и выгружается APK **без подписи** (артефакт `DynamicIsland-apk`, живёт 7 дней).
+- С секретами → подписывается, проверяется по `SIGNING_CERT_SHA256` и выгружается подписанным.
+
+**Чтобы публиковать подписанные релизы**, нужен свой keystore (PKCS12, alias `island`):
+1. Создайте keystore и получите SHA-256 сертификата:
+   ```bash
+   keytool -genkeypair -v -keystore island.p12 -storetype PKCS12 -keyalg RSA -keysize 2048 -validity 10000 -alias island
+   keytool -list -v -keystore island.p12 -storetype PKCS12 -alias island | grep SHA256
+   ```
+2. В настройках репозитория **Settings → Secrets and variables → Actions** добавьте:
+   - `KEYSTORE_BASE64` — `base64 -w0 island.p12` (содержимое файла, не путь);
+   - `KEYSTORE_PASSWORD` — пароль keystore.
+3. В `android.yml` замените `SIGNING_CERT_SHA256` на SHA-256 вашего сертификата (без двоеточий, в нижнем регистре).
+
+Фингерпринт `c691aa...` в workflow — от исходного приложения Dynamic Island (Akira). Для своего ключа его нужно заменить.

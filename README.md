@@ -181,3 +181,4 @@ Kotlin, Jetpack Compose, Material 3. Нужны JDK 17 и Android SDK 35.
 <sub>Шрифт <a href="https://github.com/rsms/inter">Inter</a> — SIL OFL 1.1 · Иконки <a href="https://ionic.io/ionicons">Ionicons</a> — MIT · Сделано с <a href="https://claude.ai/code">Claude Code</a></sub>
 </div>
 # Dynamic
+# Dynamic

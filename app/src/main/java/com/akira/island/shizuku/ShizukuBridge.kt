@@ -3,7 +3,7 @@ package com.akira.island.shizuku
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import dev.rikka.shizuku.Shizuku
+import rikka.shizuku.Shizuku
 
 /**
  * Мост к Shizuku: даёт права системы без root.

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.LineWeight
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Opacity
 import androidx.compose.material.icons.rounded.OpenWith
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.SwapHoriz

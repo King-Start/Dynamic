@@ -169,7 +169,7 @@
         <!-- Shizuku: права системы без root. Провайдер нужен Shizuku для связи с его сервисом.
              Когда Shizuku не установлен, провайдер просто не используется — остров работает как обычно. -->
         <provider
-            android:name="dev.rikka.shizuku.ShizukuProvider"
+            android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:multiprocess="false"
             android:enabled="true"

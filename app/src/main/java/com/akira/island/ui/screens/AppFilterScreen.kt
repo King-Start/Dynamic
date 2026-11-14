@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -121,7 +122,7 @@ fun AppFilterScreen(onBack: () -> Unit) {
 
         // Список в обычном Column: Page уже скроллится, LazyColumn внутри дал бы бесконечную высоту и краш
         Column(modifier = Modifier.fillMaxWidth()) {
-            filtered.forEach { app ->
+            for (app in filtered) {
                 val on = app.pkg in selected
                 val pm = context.packageManager
                 val icon = remember(app.pkg) {

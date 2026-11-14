@@ -1,5 +1,7 @@
 package com.akira.island.ui.screens
 
+import android.graphics.drawable.Drawable
+import androidx.core.graphics.drawable.toBitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -125,7 +127,7 @@ fun AppFilterScreen(onBack: () -> Unit) {
                 val on = app.pkg in selected
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
-                        .clickable { toggleApp(app.pkg, on) }
+                        .clickable { toggleApp(app.pkg, !on) }
                         .background(if (on) Ui.Card else Color.Transparent)
                         .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -145,7 +147,7 @@ fun AppFilterScreen(onBack: () -> Unit) {
                         maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                     )
                     Spacer(Modifier.width(8.dp))
-                    IslandSwitch(on) { toggleApp(app.pkg, on) }
+                    IslandSwitch(checked = on, onChange = { v -> toggleApp(app.pkg, v) })
                 }
                 Spacer(Modifier.height(2.dp))
             }
@@ -153,8 +155,8 @@ fun AppFilterScreen(onBack: () -> Unit) {
     }
 }
 
-private fun toggleApp(pkg: String, currentlyOn: Boolean) {
+private fun toggleApp(pkg: String, newOn: Boolean) {
     SettingsRepo.update {
-        copy(notifApps = if (currentlyOn) notifApps - pkg else notifApps + pkg)
+        copy(notifApps = if (newOn) notifApps + pkg else notifApps - pkg)
     }
 }

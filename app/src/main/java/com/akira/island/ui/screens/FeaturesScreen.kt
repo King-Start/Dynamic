@@ -15,6 +15,8 @@ import androidx.compose.material.icons.automirrored.rounded.Reply
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.Dashboard
@@ -329,6 +331,8 @@ private val QuickAction.settingsIcon: ImageVector
         QuickAction.SCREENSHOT -> Icons.Rounded.Screenshot
         QuickAction.CAMERA -> Icons.Rounded.PhotoCamera
         QuickAction.LOCK -> Icons.Rounded.Lock
+        QuickAction.WIFI -> Icons.Rounded.Wifi
+        QuickAction.BLUETOOTH -> Icons.Rounded.Bluetooth
     }
 
 /** Подпись к кнопке — только там, где непонятно по названию */

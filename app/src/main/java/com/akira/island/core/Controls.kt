@@ -199,14 +199,13 @@ object Controls {
     /** Переключить Wi-Fi. Android 10+ не разрешает менять его программно, поэтому открываем панель быстрых настроек. */
     fun toggleWifi(context: Context) {
         runCatching {
-            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // Программно нельзя — открываем шторку быстрых настроек
                 context.startActivity(Intent(Settings.Panel.ACTION_WIFI).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } else {
-                val enabled = cm.getNetworkInfo(android.net.ConnectivityManager.TYPE_WIFI)?.isConnected == true
+                val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
                 @Suppress("DEPRECATION")
-                cm.setWifiEnabled(!enabled)
+                wm.setWifiEnabled(!wm.isWifiEnabled)
             }
         }
     }

@@ -66,6 +66,8 @@ enum class QuickAction(private val ru: String, private val en: String, private v
     SCREENSHOT("Скриншот без острова", "Screenshot without the island", "Скриншот", "Screenshot"),
     CAMERA("Камера", "Camera", "Камера", "Camera"),
     LOCK("Заблокировать экран", "Lock the screen", "Блокировка", "Lock"),
+    WIFI("Wi-Fi", "Wi-Fi", "Wi-Fi", "Wi-Fi"),
+    BLUETOOTH("Bluetooth", "Bluetooth", "Bluetooth", "Bluetooth"),
     ;
 
     val title: String get() = tr(ru, en)
@@ -85,16 +87,17 @@ enum class AccentMode(private val ru: String, private val en: String, private va
     val hint: String get() = tr(hintRu, hintEn)
 }
 
-/** Язык приложения и острова. «Как в системе» — русский, если телефон на русском, иначе английский. */
+/** Язык приложения и острова. «Как в системе» — по языку системы. */
 @Serializable
 enum class AppLanguage {
-    SYSTEM, RU, EN;
+    SYSTEM, RU, EN, ID;
 
     val title: String
         get() = when (this) {
-            SYSTEM -> tr("Как в системе", "System default")
+            SYSTEM -> tr("Как в системе", "System default", "System default")
             RU -> "Русский"
             EN -> "English"
+            ID -> "Bahasa Indonesia"
         }
 }
 
@@ -120,6 +123,8 @@ data class IslandSettings(
     val language: AppLanguage = AppLanguage.SYSTEM,
     /** Внешний вид острова: Dynamic Island или HyperIsland */
     val style: IslandStyle = IslandStyle.AKIRA,
+    /** Aplikasi yang diizinkan menampilkan notifikasi di island. Kosong = semua aplikasi. */
+    val notifApps: Set<String> = emptySet(),
     /** HyperIsland: яркая кромка и светлая линия по верхней грани */
     val hyperHighlight: Boolean = true,
     /** HyperIsland: сила направленного света сверху (0..1) */

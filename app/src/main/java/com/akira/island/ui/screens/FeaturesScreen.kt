@@ -94,48 +94,48 @@ fun FeaturesScreen(open: (Screen) -> Unit) {
     var confirmReset by remember { mutableStateOf(false) }
     var languageDialog by remember { mutableStateOf(false) }
 
-    Page(tr("Функции", "Features")) {
-        SectionHeader(tr("Что показывает остров", "What the island shows"))
+    Page(tr("Функции", "Features", "Fitur")) {
+        SectionHeader(tr("Что показывает остров", "What the island shows", "Apa yang ditampilkan island"))
         Group {
-            GroupItem(Pos.First, Icons.Rounded.Dashboard, tr("Динамические карточки", "Dynamic cards"),
-                tr("Музыка, звонки, таймеры, фонарик, навигация", "Music, calls, timers, flashlight, navigation"),
+            GroupItem(Pos.First, Icons.Rounded.Dashboard, tr("Динамические карточки", "Dynamic cards", "Kartu dinamis"),
+                tr("Музыка, звонки, таймеры, фонарик, навигация", "Music, calls, timers, flashlight, navigation", "Musik, panggilan, timer, senter, navigasi"),
                 color = Tile.Purple, onClick = { open(Screen.CARDS) }) { Arrow() }
-            GroupItem(Pos.Middle, Icons.Rounded.ChatBubble, tr("Уведомления", "Notifications"),
-                tr("Сообщения приложений с ответом прямо в острове", "App messages with replies right in the island"),
+            GroupItem(Pos.Middle, Icons.Rounded.ChatBubble, tr("Уведомления", "Notifications", "Notifikasi"),
+                tr("Сообщения приложений с ответом прямо в острове", "App messages with replies right in the island", "Pesan aplikasi dengan balasan langsung di island"),
                 color = Tile.Blue, onClick = { open(Screen.NOTIFICATIONS) }) { Arrow() }
-            GroupItem(Pos.Middle, Icons.Rounded.NotificationsActive, tr("События", "Events"),
-                tr("Зарядка, Wi-Fi, наушники, оплата, будильник", "Charging, Wi-Fi, headphones, payments, alarm"),
+            GroupItem(Pos.Middle, Icons.Rounded.NotificationsActive, tr("События", "Events", "Peristiwa"),
+                tr("Зарядка, Wi-Fi, наушники, оплата, будильник", "Charging, Wi-Fi, headphones, payments, alarm", "Pengisian, Wi-Fi, headphone, pembayaran, alarm"),
                 color = Tile.Orange, onClick = { open(Screen.EVENTS) }) { Arrow() }
-            GroupItem(Pos.Last, Icons.Rounded.LibraryMusic, tr("Текст песен", "Lyrics"),
-                tr("Синхронный текст в раскрытом плеере", "Synced lyrics in the expanded player"),
+            GroupItem(Pos.Last, Icons.Rounded.LibraryMusic, tr("Текст песен", "Lyrics", "Lirik lagu"),
+                tr("Синхронный текст в раскрытом плеере", "Synced lyrics in the expanded player", "Lirik sinkron di pemutar yang diperluas"),
                 color = Tile.Pink, onClick = { open(Screen.LYRICS) }) { Arrow() }
         }
 
-        SectionHeader(tr("Управление", "Controls"))
+        SectionHeader(tr("Управление", "Controls", "Kontrol"))
         Group {
-            GroupItem(Pos.First, Icons.Rounded.Gesture, tr("Жесты", "Gestures"), tr("Нажатия и свайпы по капсуле", "Taps and swipes on the capsule"),
+            GroupItem(Pos.First, Icons.Rounded.Gesture, tr("Жесты", "Gestures", "Gestur"), tr("Нажатия и свайпы по капсуле", "Taps and swipes on the capsule", "Ketukan dan gesekan pada kapsul"),
                 color = Tile.Teal, onClick = { open(Screen.GESTURES) }) { Arrow() }
-            GroupItem(Pos.Middle, Icons.Rounded.Tune, tr("Поведение", "Behavior"),
-                tr("Когда показывать и сворачивать остров, виброотклик", "When to show and collapse the island, haptics"),
+            GroupItem(Pos.Middle, Icons.Rounded.Tune, tr("Поведение", "Behavior", "Perilaku"),
+                tr("Когда показывать и сворачивать остров, виброотклик", "When to show and collapse the island, haptics", "Kapan menampilkan dan melipat island, getaran"),
                 color = Tile.Indigo, onClick = { open(Screen.BEHAVIOR) }) { Arrow() }
-            GroupItem(Pos.Last, Icons.Rounded.NotificationsOff, tr("Системные плашки", "System banners"),
-                tr("Чтобы звонок, таймер и батарею показывал только остров", "So only the island shows calls, timers and battery"),
+            GroupItem(Pos.Last, Icons.Rounded.NotificationsOff, tr("Системные плашки", "System banners", "Banner sistem"),
+                tr("Чтобы звонок, таймер и батарею показывал только остров", "So only the island shows calls, timers and battery", "Agar hanya island yang menampilkan panggilan, timer, dan baterai"),
                 color = Tile.Red, onClick = { open(Screen.BANNERS) }) { Arrow() }
         }
 
-        SectionHeader(tr("Общие", "General"))
+        SectionHeader(tr("Общие", "General", "Umum"))
         Group {
             // Значок глобуса и «Language» рядом — язык найдётся, даже если сейчас он непонятен
-            GroupItem(Pos.First, Icons.Rounded.Language, if (Lang.en) "Language" else "Язык · Language", s.language.title,
+            GroupItem(Pos.First, Icons.Rounded.Language, if (Lang.en) tr("Language", "Language", "Bahasa") else "Язык · Language", s.language.title,
                 color = Tile.Blue, onClick = { languageDialog = true }) { Arrow() }
-            GroupItem(Pos.Last, Icons.Rounded.Restore, tr("Сбросить все настройки", "Reset all settings"),
-                tr("Вернуть всё как было после установки", "Back to how it was after installing"),
+            GroupItem(Pos.Last, Icons.Rounded.Restore, tr("Сбросить все настройки", "Reset all settings", "Reset semua pengaturan"),
+                tr("Вернуть всё как было после установки", "Back to how it was after installing", "Kembalikan seperti setelah pemasangan"),
                 onClick = { confirmReset = true }, color = Tile.Gray)
         }
     }
 
     if (languageDialog) {
-        ChoiceDialog(if (Lang.en) "Language" else "Язык · Language", AppLanguage.entries, s.language, { it.title },
+        ChoiceDialog(if (Lang.en) tr("Language", "Language", "Bahasa") else "Язык · Language", AppLanguage.entries, s.language, { it.title },
             { v -> SettingsRepo.update { copy(language = v) } }) { languageDialog = false }
     }
 
@@ -143,18 +143,17 @@ fun FeaturesScreen(open: (Screen) -> Unit) {
         AlertDialog(
             onDismissRequest = { confirmReset = false },
             containerColor = Ui.Card,
-            title = { Text(tr("Сбросить настройки?", "Reset settings?")) },
+            title = { Text(tr("Сбросить настройки?", "Reset settings?", "Reset pengaturan?")) },
             text = {
-                Text(tr("Размер, цвета, анимации, карточки и события вернутся к значениям по умолчанию.",
-                    "Size, colors, animations, cards and events go back to their defaults."))
+                Text(tr("Размер, цвета, анимации, карточки и события вернутся к значениям по умолчанию.", "Size, colors, animations, cards and events go back to their defaults.", "Ukuran, warna, animasi, kartu, dan peristiwa kembali ke nilai bawaan."))
             },
             confirmButton = {
                 TextButton(onClick = {
                     SettingsRepo.reset()
                     confirmReset = false
-                }) { Text(tr("Сбросить", "Reset"), color = Ui.Primary) }
+                }) { Text(tr("Сбросить", "Reset", "Reset"), color = Ui.Primary) }
             },
-            dismissButton = { TextButton(onClick = { confirmReset = false }) { Text(tr("Отмена", "Cancel"), color = Ui.Sub) } },
+            dismissButton = { TextButton(onClick = { confirmReset = false }) { Text(tr("Отмена", "Cancel", "Batal"), color = Ui.Sub) } },
         )
     }
 }
@@ -165,24 +164,24 @@ fun BehaviorScreen(onBack: () -> Unit) {
     val s by SettingsRepo.state.collectAsState()
     var collapseDialog by remember { mutableStateOf(false) }
 
-    Page(tr("Поведение", "Behavior"), onBack) {
-        SectionHeader(tr("Когда показывать", "When to show"))
+    Page(tr("Поведение", "Behavior", "Perilaku"), onBack) {
+        SectionHeader(tr("Когда показывать", "When to show", "Kapan menampilkan"))
         Group {
-            GroupToggle(Pos.First, Icons.Rounded.VisibilityOff, tr("Скрывать пустую капсулу", "Hide the empty capsule"),
-                tr("Показывать капсулу, только когда в ней что-то есть", "Show the capsule only when it has something in it"),
+            GroupToggle(Pos.First, Icons.Rounded.VisibilityOff, tr("Скрывать пустую капсулу", "Hide the empty capsule", "Sembunyikan kapsul kosong"),
+                tr("Показывать капсулу, только когда в ней что-то есть", "Show the capsule only when it has something in it", "Tampilkan kapsul hanya saat ada isinya"),
                 s.hideIdle, color = Tile.Gray) { v -> SettingsRepo.update { copy(hideIdle = v) } }
-            GroupToggle(Pos.Middle, Icons.Rounded.ScreenRotation, tr("Скрывать в альбомной ориентации", "Hide in landscape"),
-                tr("Не мешает играм и видео", "Stays out of games and videos"),
+            GroupToggle(Pos.Middle, Icons.Rounded.ScreenRotation, tr("Скрывать в альбомной ориентации", "Hide in landscape", "Sembunyikan di mode lanskap"),
+                tr("Не мешает играм и видео", "Stays out of games and videos", "Tidak mengganggu game dan video"),
                 s.hideInLandscape, color = Tile.Gray) { v -> SettingsRepo.update { copy(hideInLandscape = v) } }
-            GroupToggle(Pos.Last, Icons.Rounded.Apps, tr("Прятать плеер в его приложении", "Hide the player in its own app"),
-                tr("Карточка музыки не показывается, пока открыт сам плеер", "The music card hides while the player itself is open"),
+            GroupToggle(Pos.Last, Icons.Rounded.Apps, tr("Прятать плеер в его приложении", "Hide the player in its own app", "Sembunyikan pemutar di aplikasinya sendiri"),
+                tr("Карточка музыки не показывается, пока открыт сам плеер", "The music card hides while the player itself is open", "Kartu musik disembunyikan saat pemutar terbuka"),
                 s.hideWhenPlayerOpen, color = Tile.Blue) { v -> SettingsRepo.update { copy(hideWhenPlayerOpen = v) } }
         }
 
         // Например, только днём: с 10:00 до 23:00; можно и через полночь — с 22:00 до 7:00
-        SectionHeader(tr("Расписание", "Schedule"))
+        SectionHeader(tr("Расписание", "Schedule", "Jadwal"))
         Group {
-            GroupToggle(if (s.scheduleOn) Pos.First else Pos.Single, Icons.Rounded.Schedule, tr("По расписанию", "On a schedule"),
+            GroupToggle(if (s.scheduleOn) Pos.First else Pos.Single, Icons.Rounded.Schedule, tr("По расписанию", "On a schedule", "Sesuai jadwal"),
                 tr("Остров виден только с ${hourLabel(s.scheduleFrom)} до ${hourLabel(s.scheduleTo)}",
                     "The island shows only from ${hourLabel(s.scheduleFrom)} to ${hourLabel(s.scheduleTo)}"),
                 s.scheduleOn, color = Tile.Indigo) { v -> SettingsRepo.update { copy(scheduleOn = v) } }
@@ -194,24 +193,22 @@ fun BehaviorScreen(onBack: () -> Unit) {
             }
         }
 
-        SectionHeader(tr("Раскрытый остров", "Expanded island"))
+        SectionHeader(tr("Раскрытый остров", "Expanded island", "Island yang diperluas"))
         Group {
-            GroupItem(Pos.First, Icons.Rounded.UnfoldLess, tr("Сворачивать раскрытый остров", "Collapse the expanded island"), collapseLabel(s.autoCollapseSec),
+            GroupItem(Pos.First, Icons.Rounded.UnfoldLess, tr("Сворачивать раскрытый остров", "Collapse the expanded island", "Lipat island yang diperluas"), collapseLabel(s.autoCollapseSec),
                 color = Tile.Indigo, onClick = { collapseDialog = true })
-            GroupToggle(Pos.Last, Icons.Rounded.Circle, tr("Вторая активность рядом", "Second activity alongside"),
-                tr("Когда активностей две, вторая — кружком рядом с капсулой, как на iPhone",
-                    "With two activities, the second one is a small circle next to the capsule, like on iPhone"),
+            GroupToggle(Pos.Last, Icons.Rounded.Circle, tr("Вторая активность рядом", "Second activity alongside", "Aktivitas kedua di samping"),
+                tr("Когда активностей две, вторая — кружком рядом с капсулой, как на iPhone", "With two activities, the second one is a small circle next to the capsule, like on iPhone", "Saat ada dua aktivitas, yang kedua berupa lingkaran kecil di samping kapsul, seperti di iPhone"),
                 s.bubble, color = Tile.Purple) { v ->
                 SettingsRepo.update { copy(bubble = v) }
             }
         }
 
         // Нажатие на пустой остров: лишние кнопки убираются, а можно не раскрывать его вовсе
-        SectionHeader(tr("Пустой остров по нажатию", "Tapping the empty island"))
+        SectionHeader(tr("Пустой остров по нажатию", "Tapping the empty island", "Island kosong saat diketuk"))
         Group {
-            GroupToggle(if (s.idleExpand) Pos.First else Pos.Single, Icons.Rounded.UnfoldMore, tr("Раскрывать", "Expand"),
-                tr("Часы, заряд и кнопки ниже. Выключено — нажатие ничего не делает",
-                    "Clock, battery and the buttons below. Off — tapping does nothing"),
+            GroupToggle(if (s.idleExpand) Pos.First else Pos.Single, Icons.Rounded.UnfoldMore, tr("Раскрывать", "Expand", "Perluas"),
+                tr("Часы, заряд и кнопки ниже. Выключено — нажатие ничего не делает", "Clock, battery and the buttons below. Off — tapping does nothing", "Jam, pengisian, dan tombol di bawah. Mati — ketukan tidak melakukan apa-apa"),
                 s.idleExpand, color = Tile.Blue) { v -> SettingsRepo.update { copy(idleExpand = v) } }
             if (s.idleExpand) {
                 QuickAction.entries.forEachIndexed { i, a ->
@@ -224,12 +221,12 @@ fun BehaviorScreen(onBack: () -> Unit) {
             }
         }
 
-        SectionHeader(tr("Отклик", "Feedback"))
+        SectionHeader(tr("Отклик", "Feedback", "Umpan balik"))
         Group {
-            GroupToggle(Pos.First, Icons.Rounded.Vibration, tr("Виброотклик", "Haptics"),
-                tr("При открытии, закрытии и нажатиях на капсулу", "When opening, closing and tapping the capsule"),
+            GroupToggle(Pos.First, Icons.Rounded.Vibration, tr("Виброотклик", "Haptics", "Getaran"),
+                tr("При открытии, закрытии и нажатиях на капсулу", "When opening, closing and tapping the capsule", "Saat membuka, menutup, dan mengetuk kapsul"),
                 s.haptics, color = Tile.Pink) { v -> SettingsRepo.update { copy(haptics = v) } }
-            GroupToggle(Pos.Last, Icons.Rounded.LightMode, tr("Включать экран", "Turn on the screen"),
+            GroupToggle(Pos.Last, Icons.Rounded.LightMode, tr("Включать экран", "Turn on the screen", "Nyalakan layar"),
                 tr("Когда звонит таймер, будильник или входящий вызов — экран включается и не гаснет, пока звонит",
                     "When a timer, alarm or incoming call rings, the screen turns on and stays on while it rings"),
                 s.wakeForAlerts, color = Tile.Yellow) { v -> SettingsRepo.update { copy(wakeForAlerts = v) } }
@@ -237,7 +234,7 @@ fun BehaviorScreen(onBack: () -> Unit) {
     }
 
     if (collapseDialog) {
-        ChoiceDialog(tr("Сворачивать раскрытый остров", "Collapse the expanded island"), listOf(0, 5, 10, 20, 30), s.autoCollapseSec, ::collapseLabel,
+        ChoiceDialog(tr("Сворачивать раскрытый остров", "Collapse the expanded island", "Lipat island yang diperluas"), listOf(0, 5, 10, 20, 30), s.autoCollapseSec, ::collapseLabel,
             { v -> SettingsRepo.update { copy(autoCollapseSec = v) } }) { collapseDialog = false }
     }
 }
@@ -246,7 +243,7 @@ fun BehaviorScreen(onBack: () -> Unit) {
 private fun hourLabel(h: Int) = "%d:00".format(h)
 
 /** Подпись для «Сворачивать раскрытый остров». */
-private fun collapseLabel(sec: Int) = if (sec <= 0) tr("Только касанием мимо или свайпом вверх", "Only by tapping outside or swiping up")
+private fun collapseLabel(sec: Int) = if (sec <= 0) tr("Только касанием мимо или свайпом вверх", "Only by tapping outside or swiping up", "Hanya dengan mengetuk di luar atau menggesek ke atas")
     else tr("Через $sec секунд без касаний", "After $sec seconds without a touch")
 
 private val accentColors = listOf(
@@ -260,29 +257,29 @@ fun NotificationsScreen(onBack: () -> Unit) {
     val s by SettingsRepo.state.collectAsState()
     var accentDialog by remember { mutableStateOf(false) }
 
-    Page(tr("Уведомления", "Notifications"), onBack) {
+    Page(tr("Уведомления", "Notifications", "Notifikasi"), onBack) {
         Group {
-            GroupToggle(Pos.First, Icons.Rounded.ChatBubble, tr("Уведомления приложений", "App notifications"),
+            GroupToggle(Pos.First, Icons.Rounded.ChatBubble, tr("Уведомления приложений", "App notifications", "Notifikasi aplikasi"),
                 tr("Сообщения из Telegram, WhatsApp, почты и других приложений — карточкой в острове, как на iPhone",
                     "Messages from Telegram, WhatsApp, email and other apps as a card in the island, like on iPhone"),
                 s.cardMessages, color = Tile.Blue) { v -> SettingsRepo.update { copy(cardMessages = v) } }
-            GroupToggle(Pos.Middle, Icons.AutoMirrored.Rounded.Reply, tr("Кнопки в уведомлениях", "Notification buttons"),
+            GroupToggle(Pos.Middle, Icons.AutoMirrored.Rounded.Reply, tr("Кнопки в уведомлениях", "Notification buttons", "Tombol di notifikasi"),
                 tr("«Ответить» с вводом текста прямо в острове и «Пометить прочитанным»", "Reply with typing right in the island, and Mark as read"),
                 s.msgActions, color = Tile.Indigo) { v -> SettingsRepo.update { copy(msgActions = v) } }
-            GroupToggle(Pos.Middle, Icons.Rounded.Smartphone, tr("Из открытого приложения", "From the open app"),
+            GroupToggle(Pos.Middle, Icons.Rounded.Smartphone, tr("Из открытого приложения", "From the open app", "Dari aplikasi yang terbuka"),
                 tr("Показывать и уведомления приложения, которое сейчас на экране", "Also show notifications from the app that's on screen"),
                 s.msgInApp, color = Tile.Teal) { v ->
                 SettingsRepo.update { copy(msgInApp = v) }
             }
             GroupSlider(
-                Pos.Last, Icons.Rounded.FormatLineSpacing, tr("Строк текста", "Text lines"),
+                Pos.Last, Icons.Rounded.FormatLineSpacing, tr("Строк текста", "Text lines", "Baris teks"),
                 value = s.msgLines.toFloat(), range = 1f..6f, steps = 4, label = "${s.msgLines}", color = Tile.Green,
             ) { v -> SettingsRepo.update { copy(msgLines = Math.round(v)) } }
         }
 
-        SectionHeader(tr("Цвет кнопок", "Button color"))
+        SectionHeader(tr("Цвет кнопок", "Button color", "Warna tombol"))
         AccentPreview(s)
-        GroupItem(Pos.Single, Icons.Rounded.Palette, tr("Цвет кнопок", "Button color"), "${s.accentMode.title} — ${s.accentMode.hint}",
+        GroupItem(Pos.Single, Icons.Rounded.Palette, tr("Цвет кнопок", "Button color", "Warna tombol"), "${s.accentMode.title} — ${s.accentMode.hint}",
             onClick = { accentDialog = true }, color = Tile.Orange)
         if (s.accentMode == AccentMode.CUSTOM) {
             Swatches(accentColors, s.accentColor) { c -> SettingsRepo.update { copy(accentColor = c) } }
@@ -290,7 +287,7 @@ fun NotificationsScreen(onBack: () -> Unit) {
     }
 
     if (accentDialog) {
-        ChoiceDialog(tr("Цвет кнопок", "Button color"), AccentMode.entries, s.accentMode, { "${it.title} — ${it.hint}" },
+        ChoiceDialog(tr("Цвет кнопок", "Button color", "Warna tombol"), AccentMode.entries, s.accentMode, { "${it.title} — ${it.hint}" },
             { v -> SettingsRepo.update { copy(accentMode = v) } }) { accentDialog = false }
     }
 }
@@ -306,8 +303,8 @@ private fun AccentPreview(s: IslandSettings) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        PreviewTile(tr("Ответить", "Reply"), accent, Modifier.weight(1f))
-        PreviewTile(tr("Пометить прочитанным", "Mark as read"), accent, Modifier.weight(2f))
+        PreviewTile(tr("Ответить", "Reply", "Balas"), accent, Modifier.weight(1f))
+        PreviewTile(tr("Пометить прочитанным", "Mark as read", "Tandai sudah dibaca"), accent, Modifier.weight(2f))
         Box(Modifier.size(40.dp).clip(CircleShape).background(accent), contentAlignment = Alignment.Center) {
             Icon(Icons.Rounded.ArrowUpward, null, tint = onAccent(accent), modifier = Modifier.size(22.dp))
         }

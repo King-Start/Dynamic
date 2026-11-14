@@ -53,8 +53,18 @@ class NotifListener : NotificationListenerService() {
 object NotificationParser {
     private val icons = HashMap<String, ImageBitmap?>()
 
+    /** Системные каналы, которые показываются всегда, даже если приложение выключено в фильтре. */
+    private fun isCritical(sbn: StatusBarNotification): Boolean =
+        sbn.notification?.category == Notification.CATEGORY_CALL ||
+            sbn.notification?.category == Notification.CATEGORY_ALARM ||
+            sbn.notification?.category == Notification.CATEGORY_TRANSPORT
+
     fun onPosted(context: Context, sbn: StatusBarNotification, initial: Boolean = false) {
         if (sbn.packageName == context.packageName) return
+        // Фильтр приложений: если пользователь выбрал конкретные приложения, показываем только их.
+        // Системные каналы (будильник, звонок, хронометр) показываются всегда — они критичны.
+        val allowed = SettingsRepo.current.notifApps
+        if (allowed.isNotEmpty() && sbn.packageName !in allowed && !isCritical(sbn)) return
         val n = sbn.notification ?: return
         val ex = n.extras ?: return
         val isMedia = n.category == Notification.CATEGORY_TRANSPORT || ex.containsKey(Notification.EXTRA_MEDIA_SESSION)

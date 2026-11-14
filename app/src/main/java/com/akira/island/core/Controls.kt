@@ -196,6 +196,34 @@ object Controls {
         IslandBus.commands.tryEmit(ServiceCommand.LOCK)
     }
 
+    /** Переключить Wi-Fi. Android 10+ не разрешает менять его программно, поэтому открываем панель быстрых настроек. */
+    fun toggleWifi(context: Context) {
+        runCatching {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Программно нельзя — открываем шторку быстрых настроек
+                context.startActivity(Intent(Settings.Panel.ACTION_WIFI).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } else {
+                val enabled = cm.getNetworkInfo(android.net.ConnectivityManager.TYPE_WIFI)?.isConnected == true
+                @Suppress("DEPRECATION")
+                cm.setWifiEnabled(!enabled)
+            }
+        }
+    }
+
+    /** Переключить Bluetooth. Android 13+ требует разрешения, поэтому просто открываем настройки Bluetooth. */
+    fun toggleBluetooth(context: Context) {
+        runCatching {
+            val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter() ?: return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } else {
+                @Suppress("DEPRECATION")
+                if (adapter.isEnabled) adapter.disable() else adapter.enable()
+            }
+        }
+    }
+
     /** Выключить службу острова, например на время банковского приложения. Включить её снова можно только в настройках */
     fun turnOffIsland() {
         IslandBus.commands.tryEmit(ServiceCommand.TURN_OFF)

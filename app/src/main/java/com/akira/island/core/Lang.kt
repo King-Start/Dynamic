@@ -15,22 +15,40 @@ import java.util.Locale
  * иначе английский. Строки пишутся парой прямо в коде: tr("Зарядка", "Charging").
  */
 object Lang {
-    val en: Boolean
+    /** Активный язык приложения: RU / EN / ID. */
+    val current: AppLanguage
         get() = when (SettingsRepo.current.language) {
-            AppLanguage.EN -> true
-            AppLanguage.RU -> false
-            AppLanguage.SYSTEM -> systemLanguage() != "ru"
+            AppLanguage.RU -> AppLanguage.RU
+            AppLanguage.EN -> AppLanguage.EN
+            AppLanguage.ID -> AppLanguage.ID
+            AppLanguage.SYSTEM -> when (systemLanguage()) {
+                "ru" -> AppLanguage.RU
+                "id" -> AppLanguage.ID
+                else -> AppLanguage.EN
+            }
         }
 
-    /** Для дат: «пятница, 24 октября» или «Friday, October 24» */
-    val locale: Locale get() = if (en) Locale.ENGLISH else Locale.forLanguageTag("ru")
+    val en: Boolean get() = current != AppLanguage.RU
+    val id: Boolean get() = current == AppLanguage.ID
+
+    /** Для дат: «пятница, 24 октября» или «Friday, October 24» или «Jumat, 24 Oktober» */
+    val locale: Locale
+        get() = when (current) {
+            AppLanguage.RU -> Locale.forLanguageTag("ru")
+            AppLanguage.ID -> Locale.forLanguageTag("id")
+            else -> Locale.ENGLISH
+        }
 
     private fun systemLanguage(): String =
         runCatching { Resources.getSystem().configuration.locales[0].language }.getOrNull() ?: Locale.getDefault().language
 }
 
-/** Строка на текущем языке. */
-fun tr(ru: String, en: String): String = if (Lang.en) en else ru
+/** Строка на текущем языке. Третий аргумент — индонезийский; если не задан, берём английский. */
+fun tr(ru: String, en: String, id: String = en): String = when (Lang.current) {
+    AppLanguage.RU -> ru
+    AppLanguage.ID -> id
+    else -> en
+}
 
 /**
  * Сменили язык (в настройках или в системе) — всё внутри рисуется заново уже на новом языке.

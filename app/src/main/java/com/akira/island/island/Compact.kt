@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -102,6 +103,7 @@ import com.akira.island.core.NoticeStyle
 import com.akira.island.core.Tints
 import com.akira.island.core.formatDuration
 import com.akira.island.data.IslandSettings
+import com.akira.island.data.IslandStyle
 import com.akira.island.data.SettingsRepo
 import com.akira.island.service.Messages
 import androidx.compose.runtime.collectAsState
@@ -161,7 +163,7 @@ fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
                             transformOrigin = TransformOrigin(0.5f, 0.1f)
                         })
                     },
-                    right = { Text(tr("Таймер", "Timer"), color = Tints.Orange, fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
+                    right = { Text(tr("Таймер", "Timer", "Timer"), color = Tints.Orange, fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
                 )
             } else {
                 val left = act.t.left(now)
@@ -249,7 +251,7 @@ fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
 
         is Act.NoticeA -> NoticeCompact(act.n, s, wideWidth)
 
-        is Act.PayA -> PayReady(tr("Оплата", "Pay"), tr("К терминалу", "Hold near reader"), act.p.icon, s, wideWidth)
+        is Act.PayA -> PayReady(tr("Оплата", "Pay", "Bayar"), tr("К терминалу", "Hold near reader", "Dekatkan ke terminal"), act.p.icon, s, wideWidth)
 
     }
 }
@@ -490,19 +492,22 @@ private fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress("
             }
             Spacer(Modifier.width(compactGap(s)))
             Row(Modifier.weight(1f), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                Text(tr("сейчас", "now"), color = dim, fontSize = 12.sp, maxLines = 1, softWrap = false)
+                Text(tr("сейчас", "now", "sekarang"), color = dim, fontSize = 12.sp, maxLines = 1, softWrap = false)
                 Spacer(Modifier.width(4.dp))
                 Icon(Ios.bell, null, tint = dim, modifier = Modifier.size(12.dp))
             }
         }
         Spacer(Modifier.height((messageTop(s) - s.height.dp).coerceAtLeast(4.dp)))
         Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.Top) {
-            NotifIcon(if (hidden) m.copy(avatar = null) else m, n, iconSize, Color(s.color))
+            if (s.style == IslandStyle.HYPERISLAND) HyperNotifIcon(if (hidden) m.copy(avatar = null) else m, n, iconSize * 1.15f, Color(s.color))
+            else NotifIcon(if (hidden) m.copy(avatar = null) else m, n, iconSize, Color(s.color))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(Modifier.fillMaxWidth().heightIn(min = 22.dp), verticalAlignment = Alignment.CenterVertically) {
+                    val hyper = s.style == IslandStyle.HYPERISLAND
                     Text(
-                        if (hidden) m.appName else n.title, color = Color.White, fontSize = 15.sp, lineHeight = 20.sp,
+                        if (hidden) m.appName else n.title, color = Color.White,
+                        fontSize = if (hyper) 17.sp else 15.sp, lineHeight = if (hyper) 23.sp else 20.sp,
                         fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                     )
                     if (m.history.size > 1 && !hidden) {
@@ -514,7 +519,7 @@ private fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress("
                     }
                 }
                 if (hidden) {
-                    Text(tr("Содержимое скрыто", "Content hidden"), color = dim, fontSize = 14.sp, lineHeight = 19.sp, maxLines = 1)
+                    Text(tr("Содержимое скрыто", "Content hidden", "Isi disembunyikan"), color = dim, fontSize = 14.sp, lineHeight = 19.sp, maxLines = 1)
                 } else if (open && m.history.size > 1) {
                     m.history.forEachIndexed { i, line ->
                         Text(
@@ -543,7 +548,7 @@ private fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress("
                         // Как в ролике: на миг «Отправлено» с галочкой и кому
                         IslandBus.post(
                             Notice(
-                                title = tr("Отправлено", "Sent"),
+                                title = tr("Отправлено", "Sent", "Terkirim"),
                                 state = n.title,
                                 icon = n.icon,
                                 tint = accent,
@@ -553,7 +558,7 @@ private fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress("
                         )
                     } else {
                         // Поле остаётся открытым с текстом — можно попробовать ещё раз или ответить в приложении
-                        Toast.makeText(context, tr("Не удалось отправить ответ", "Couldn't send the reply"), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, tr("Не удалось отправить ответ", "Couldn't send the reply", "Gagal mengirim balasan"), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -622,6 +627,34 @@ private fun NotifIcon(m: AppMessage, n: Notice, size: Dp, ring: Color) {
             Image(
                 m.appIcon, null,
                 Modifier.align(Alignment.BottomEnd).size(size * 0.44f).clip(CircleShape).background(ring).padding(2.dp).clip(CircleShape),
+            )
+        }
+    }
+}
+
+/**
+ * Значок уведомления в стиле HyperIsland: не круглый аватар, а скруглённый квадрат — как
+ * фокус-уведомления HyperOS. Чуть крупнее и с тонкой светлой обводкой, чтобы читалось на «стекле».
+ */
+@Composable
+private fun HyperNotifIcon(m: AppMessage, n: Notice, size: Dp, ring: Color) {
+    Box(Modifier.size(size + 4.dp)) {
+        val big = m.avatar ?: m.appIcon
+        val shape = RoundedCornerShape(size * 0.36f)
+        if (big != null) {
+            Image(big, null, Modifier.size(size).clip(shape), contentScale = ContentScale.Crop)
+        } else {
+            Box(Modifier.size(size).clip(shape).background(Color(0xFF2C2C2E)), contentAlignment = Alignment.Center) {
+                Icon(n.icon, null, tint = Color.White, modifier = Modifier.size(size * 0.5f))
+            }
+        }
+        // Тонкая светлая обводка — акцент стиля HyperIsland
+        Box(Modifier.size(size).clip(shape).border(1.dp, Color.White.copy(alpha = 0.18f), shape))
+        if (m.avatar != null && m.appIcon != null) {
+            Image(
+                m.appIcon, null,
+                Modifier.align(Alignment.BottomEnd).size(size * 0.44f).clip(RoundedCornerShape(size * 0.16f))
+                    .background(ring).padding(2.dp).clip(RoundedCornerShape(size * 0.14f)),
             )
         }
     }
@@ -892,7 +925,7 @@ private fun IncomingCall(c: CallInfo, s: IslandSettings, wideWidth: Dp) {
         }
         Spacer(Modifier.width(11.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-            Text(tr("Входящий вызов", "Incoming call"), color = Tints.Gray, fontSize = 12.5.sp, lineHeight = 15.sp, maxLines = 1)
+            Text(tr("Входящий вызов", "Incoming call", "Panggilan masuk"), color = Tints.Gray, fontSize = 12.5.sp, lineHeight = 15.sp, maxLines = 1)
             Text(c.name, color = Color.White, fontSize = 18.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 1,
                 overflow = TextOverflow.Ellipsis)
         }

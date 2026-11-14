@@ -57,6 +57,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.HeartBroken
@@ -758,6 +760,8 @@ private fun QuickButton(a: QuickAction, context: Context, modifier: Modifier) {
         QuickAction.CAMERA -> Icons.Rounded.PhotoCamera
         QuickAction.LOCK -> Ios.lock
         QuickAction.TIMER -> Ios.timer
+        QuickAction.WIFI -> Icons.Rounded.Wifi
+        QuickAction.BLUETOOTH -> Icons.Rounded.Bluetooth
     }
     PillButton(icon, a.short, modifier) {
         when (a) {
@@ -779,6 +783,14 @@ private fun QuickButton(a: QuickAction, context: Context, modifier: Modifier) {
                 Controls.lockScreen()
             }
             QuickAction.TIMER -> Controls.startTimer(SettingsRepo.current.timerMinutes)
+            QuickAction.WIFI -> {
+                Controls.toggleWifi(context)
+                Controls.collapse()
+            }
+            QuickAction.BLUETOOTH -> {
+                Controls.toggleBluetooth(context)
+                Controls.collapse()
+            }
         }
     }
 }

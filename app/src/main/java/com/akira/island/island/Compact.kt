@@ -50,6 +50,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -234,16 +235,32 @@ fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
             },
         )
 
-        is Act.ChargingA -> CompactRow(h, gap, side * 1.6f,
-            left = { Icon(Ios.flash, null, tint = Tints.Green, modifier = Modifier.size(icon)) },
-            right = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TimeText("${act.b.level}%", Tints.Green, 15)
-                    Spacer(Modifier.width(5.dp))
-                    BatteryGlyph(act.b.level, Tints.Green, Modifier.size(h * 0.6f, h * 0.3f))
+        is Act.ChargingA -> {
+            // Зарядка: молния мягко пульсирует, у кольца и батарейки общий зелёный акцент
+            val pulse = remember { Animatable(0.75f) }
+            LaunchedEffect(Unit) {
+                while (true) {
+                    pulse.animateTo(1.15f, tween(520, easing = FastOutSlowInEasing))
+                    pulse.animateTo(0.75f, tween(520, easing = FastOutSlowInEasing))
                 }
-            },
-        )
+            }
+            CompactRow(h, gap, side * 1.6f,
+                left = {
+                    Box(Modifier.size(icon), contentAlignment = Alignment.Center) {
+                        // Кольцо вокруг молнии — как круг зарядки на HyperOS
+                        ProgressRing(act.b.level / 100f, Tints.Green, Modifier.size(icon * 1.25f), stroke = 2.dp)
+                        Icon(Ios.flash, null, tint = Tints.Green, modifier = Modifier.size(icon * 0.62f).scale(pulse.value))
+                    }
+                },
+                right = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TimeText("${act.b.level}%", Tints.Green, 15)
+                        Spacer(Modifier.width(5.dp))
+                        BatteryGlyph(act.b.level, Tints.Green, Modifier.size(h * 0.6f, h * 0.3f))
+                    }
+                },
+            )
+        }
 
         is Act.LiveA -> LiveCompact(act.l, s)
 
@@ -332,13 +349,28 @@ private fun MediaCompact(m: MediaInfo, s: IslandSettings) {
     val egg by IslandBus.egg.collectAsState()
     // Новый трек: обложка сменяется плавно, цвет эквалайзера перетекает в цвет новой обложки
     val accent by animateColorAsState(m.accent, tween(400), label = "accent")
-    CompactRow(h, compactGap(s), sideMax(s),
-        left = { Crossfade(m.art, animationSpec = tween(300), label = "art") { Art(it, art, art * 0.24f) } },
-        right = {
-            // Пасхалка: вместо эквалайзера бьётся душа
-            if (egg) SoulHeart(Modifier.size(h * 0.5f)) else Equalizer(accent, m.playing, s.liveEqualizer, Modifier.size(h * 0.6f, h * 0.42f))
-        },
-    )
+    Box(Modifier.width(s.width.dp + s.activeWidth.dp)) {
+        CompactRow(h, compactGap(s), sideMax(s),
+            left = { Crossfade(m.art, animationSpec = tween(300), label = "art") { Art(it, art, art * 0.24f) } },
+            right = {
+                // Пасхалка: вместо эквалайзера бьётся душа
+                if (egg) SoulHeart(Modifier.size(h * 0.5f)) else Equalizer(accent, m.playing, s.liveEqualizer, Modifier.size(h * 0.6f, h * 0.42f))
+            },
+        )
+        // Мини-прогресс трека: тонкая полоска снизу, как в плеере — видно, сколько осталось
+        if (m.durationMs > 0) {
+            val frac = (m.positionMs.toFloat() / m.durationMs).coerceIn(0f, 1f)
+            Box(
+                Modifier.align(Alignment.BottomCenter).fillMaxWidth(0.62f).height(2.dp)
+                    .clip(RoundedCornerShape(1.dp)).background(Color.White.copy(alpha = 0.12f)),
+            ) {
+                Box(
+                    Modifier.fillMaxWidth(frac).fillMaxHeight().clip(RoundedCornerShape(1.dp))
+                        .background(accent.copy(alpha = 0.9f)),
+                )
+            }
+        }
+    }
 }
 
 /**

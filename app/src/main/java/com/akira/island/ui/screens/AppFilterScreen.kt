@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
@@ -52,7 +50,7 @@ import com.akira.island.ui.Tile
 import androidx.compose.material.icons.rounded.Checklist
 
 /** Список пользовательских приложений для фильтра уведомлений острова. */
-private data class AppInfo(val pkg: String, val label: String, val icon: androidx.compose.ui.graphics.ImageBitmap?)
+private data class AppInfo(val pkg: String, val label: String)
 
 /** «Уведомления» → выбор приложений: какие приложения остров показывает, а какие игнорирует. */
 @Composable
@@ -70,8 +68,7 @@ fun AppFilterScreen(onBack: () -> Unit) {
                 val pkg = ri.activityInfo.packageName
                 if (pkg == context.packageName) continue
                 val label = runCatching { ri.loadLabel(pm).toString() }.getOrDefault(pkg)
-                val icon = runCatching { pm.getApplicationIcon(pkg).toBitmap(96, 96).asImageBitmap() }.getOrNull()
-                list += AppInfo(pkg, label, icon)
+                list += AppInfo(pkg, label)
             }
         }
         list.distinctBy { it.pkg }.sortedBy { it.label.lowercase() }
@@ -122,9 +119,14 @@ fun AppFilterScreen(onBack: () -> Unit) {
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp).clip(RoundedCornerShape(16.dp)),
         )
 
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(filtered, key = { it.pkg }) { app ->
+        // Список в обычном Column: Page уже скроллится, LazyColumn внутри дал бы бесконечную высоту и краш
+        Column(modifier = Modifier.fillMaxWidth()) {
+            filtered.forEach { app ->
                 val on = app.pkg in selected
+                val pm = context.packageManager
+                val icon = remember(app.pkg) {
+                    runCatching { pm.getApplicationIcon(app.pkg).toBitmap(96, 96).asImageBitmap() }.getOrNull()
+                }
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
                         .clickable { toggleApp(app.pkg, !on) }
@@ -132,8 +134,8 @@ fun AppFilterScreen(onBack: () -> Unit) {
                         .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (app.icon != null) {
-                        Image(app.icon, null, Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)),
+                    if (icon != null) {
+                        Image(icon, null, Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)),
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop)
                     } else {
                         Box(Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)).background(Ui.Card),

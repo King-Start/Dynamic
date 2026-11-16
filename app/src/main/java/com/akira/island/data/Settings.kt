@@ -108,12 +108,15 @@ enum class AppLanguage {
  * Каждый рисует своё содержимое, но данные и жесты общие.
  */
 @Serializable
-enum class IslandStyle(private val ru: String, private val en: String) {
-    AKIRA("Dynamic Island", "Dynamic Island"),
-    HYPERISLAND("HyperIsland", "HyperIsland"),
+enum class IslandStyle(private val ru: String, private val en: String, private val id: String) {
+    AKIRA("Dynamic Island", "Dynamic Island", "Dynamic Island"),
+    HYPERISLAND("HyperIsland", "HyperIsland", "HyperIsland"),
+    NEON("Неон", "Neon", "Neon"),
+    GRADIENT("Градиент", "Gradient", "Gradien"),
+    IPHONE("iPhone", "iPhone", "iPhone"),
     ;
 
-    val title: String get() = tr(ru, en)
+    val title: String get() = tr(ru, en, id)
 }
 
 @Serializable

@@ -76,13 +76,19 @@ import com.akira.island.core.NoticeStyle
 import com.akira.island.core.PayReady
 import com.akira.island.core.Tints
 import com.akira.island.core.tr
+import com.akira.island.data.IslandSettings
+import com.akira.island.data.IslandStyle
 import com.akira.island.data.SettingsRepo
 import com.akira.island.island.Act
 import com.akira.island.island.CompactContent
 import com.akira.island.island.Ios
 import com.akira.island.island.activeHeight
 import com.akira.island.island.glassSurface
+import com.akira.island.island.gradientSurface
+import com.akira.island.island.hyperSurface
+import com.akira.island.island.iphoneSurface
 import com.akira.island.island.islandGlow
+import com.akira.island.island.neonSurface
 import com.akira.island.island.islandShape
 import com.akira.island.island.rememberHaptic
 import com.akira.island.service.NotificationParser
@@ -512,8 +518,19 @@ fun IslandPreview(expanded: Boolean = false) {
                 .then(if (!expanded && s.fxGlow && !s.reduceEffects) Modifier.drawBehind { islandGlow(demo.accent, 1f, corner.toPx(), s.notch) } else Modifier)
                 .clip(shape)
                 .then(
-                    if (s.liquidGlass) Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f)
-                    else Modifier.background(Color(s.color)),
+                    when (s.style) {
+                        IslandStyle.HYPERISLAND ->
+                            Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
+                        IslandStyle.NEON ->
+                            Modifier.neonSurface(shape, Color(s.color), glow = !s.reduceEffects)
+                        IslandStyle.GRADIENT ->
+                            Modifier.gradientSurface(shape, Color(s.color))
+                        IslandStyle.IPHONE ->
+                            Modifier.iphoneSurface(shape)
+                        IslandStyle.AKIRA ->
+                            if (s.liquidGlass) Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f)
+                            else Modifier.background(Color(s.color))
+                    },
                 )
                 .then(if (s.outline) Modifier.border(s.outlineWidth.dp, if (s.outlineFromArt) Tints.Lavender else Color(s.outlineColor), shape) else Modifier)
                 .animateContentSize(),

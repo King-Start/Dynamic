@@ -551,6 +551,12 @@ private fun IslandBody(
                 } else when (s.style) {
                     com.akira.island.data.IslandStyle.HYPERISLAND ->
                         Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
+                    com.akira.island.data.IslandStyle.NEON ->
+                        Modifier.neonSurface(shape, Color(s.color), glow = !s.reduceEffects)
+                    com.akira.island.data.IslandStyle.GRADIENT ->
+                        Modifier.gradientSurface(shape, Color(s.color))
+                    com.akira.island.data.IslandStyle.IPHONE ->
+                        Modifier.iphoneSurface(shape)
                     com.akira.island.data.IslandStyle.AKIRA ->
                         if (s.liquidGlass) {
                             Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f, tilt = { tilt.value }) { sheen.value }

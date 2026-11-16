@@ -406,6 +406,68 @@ private fun NoticeCompact(n: Notice, s: IslandSettings, wideWidth: Dp) {
 }
 
 @Composable
+private fun HyperNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
+    val accent = rememberAccent(s, n.tint)
+    Box(
+        Modifier
+            .width(wideWidth)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(Color(0xFF1A1A2E).copy(alpha = 0.92f), RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun NeonNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
+    val accent = rememberAccent(s, n.tint)
+    Box(
+        Modifier
+            .width(wideWidth)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(Color(0xFF0D0D12), RoundedCornerShape(20.dp))
+            .border(2.dp, accent.copy(alpha = 0.6f), RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun GradientNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
+    val accent = rememberAccent(s, n.tint)
+    Box(
+        Modifier
+            .width(wideWidth)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(
+                Brush.verticalGradient(
+                    0f to accent.copy(alpha = 0.85f),
+                    1f to Color(0xFF0D0D12).copy(alpha = 0.95f),
+                ),
+                RoundedCornerShape(20.dp),
+            )
+            .clip(RoundedCornerShape(20.dp))
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun IphoneNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
+    Box(
+        Modifier
+            .width(wideWidth)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(Color(0xFF000000).copy(alpha = 0.96f), RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
+    ) {
+        content()
+    }
+}
+
+@Composable
 private fun WideNotice(n: Notice, s: IslandSettings, wideWidth: Dp) {
     // Значок «выпрыгивает», батарейка и кольцо заполняются — как на iPhone
     val pop = remember(n.id) { Animatable(if (s.reduceEffects) 1f else 0.3f) }

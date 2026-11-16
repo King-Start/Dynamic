@@ -115,9 +115,4 @@ private data class FeatureInfo(
     val color: Color,
 )
 
-@Composable
-fun Arrow() {
-    Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = Ui.Sub)
-}
-
 private val Ui = com.akira.island.ui.Ui

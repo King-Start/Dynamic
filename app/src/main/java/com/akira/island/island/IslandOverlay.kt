@@ -565,8 +565,9 @@ private fun IslandBody(
                         } else {
                             Modifier.background(Color(s.color))
                         }
-                },
-            )
+                }
+            }
+        )
             .then(
                 when {
                     calibrating -> Modifier.border(2.dp, Color.White, shape)

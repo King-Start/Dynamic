@@ -3,6 +3,7 @@ package com.akira.island.data
 import android.content.Context
 import android.content.SharedPreferences
 import com.akira.island.core.tr
+import com.akira.island.data.IslandStyle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -126,6 +127,21 @@ data class IslandSettings(
     val language: AppLanguage = AppLanguage.SYSTEM,
     /** Внешний вид острова: Dynamic Island или HyperIsland */
     val style: IslandStyle = IslandStyle.AKIRA,
+    /** Стиль для каждого типа активности (фичи): можно выбрать свой для зарядки, будильника, уведомлений и т.д. */
+    val featureStyles: Map<String, IslandStyle> = mapOf(
+        "media" to IslandStyle.AKIRA,
+        "timer" to IslandStyle.AKIRA,
+        "stopwatch" to IslandStyle.AKIRA,
+        "torch" to IslandStyle.AKIRA,
+        "chrono" to IslandStyle.AKIRA,
+        "progress" to IslandStyle.AKIRA,
+        "call" to IslandStyle.AKIRA,
+        "live" to IslandStyle.AKIRA,
+        "charging" to IslandStyle.AKIRA,
+        "pay" to IslandStyle.AKIRA,
+        "alarm" to IslandStyle.AKIRA,
+        "notice" to IslandStyle.AKIRA,
+    ),
     /** Aplikasi yang diizinkan menampilkan notifikasi di island. Kosong = semua aplikasi. */
     val notifApps: Set<String> = emptySet(),
     /** HyperIsland: яркая кромка и светлая линия по верхней грани */

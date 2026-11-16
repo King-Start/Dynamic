@@ -548,7 +548,9 @@ private fun IslandBody(
             .then(
                 if (calibrating) {
                     Modifier.background(CalibrationRed)
-                } else when (s.style) {
+                } else {
+                    val featureStyle = s.featureStyles[primary.id] ?: s.style
+                    when (featureStyle) {
                     com.akira.island.data.IslandStyle.HYPERISLAND ->
                         Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
                     com.akira.island.data.IslandStyle.NEON ->

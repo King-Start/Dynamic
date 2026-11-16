@@ -72,6 +72,7 @@ import com.akira.island.ui.screens.BehaviorScreen
 import com.akira.island.ui.screens.CapsuleScreen
 import com.akira.island.ui.screens.CardsScreen
 import com.akira.island.ui.screens.AppFilterScreen
+import com.akira.island.ui.screens.FeatureStylesScreen
 import com.akira.island.ui.screens.ColorsScreen
 import com.akira.island.ui.screens.DiagScreen
 import com.akira.island.ui.screens.EffectsScreen
@@ -95,7 +96,7 @@ import com.akira.island.update.UpdateChecker
 
 enum class Screen {
     CARDS, EVENTS, GESTURES, LYRICS, SIZE, COLORS, INSTRUCTION, ABOUT, DIAG, LOOK, ANIM, EFFECTS, BANNERS,
-    PERMISSIONS, TESTS, NOTIFICATIONS, BEHAVIOR, PAYDIAG, KEEPALIVE, BANKS, STYLE, APPS,
+    PERMISSIONS, TESTS, NOTIFICATIONS, BEHAVIOR, PAYDIAG, KEEPALIVE, BANKS, STYLE, APPS, FEATURE_STYLES,
 }
 
 class MainActivity : ComponentActivity() {
@@ -180,6 +181,7 @@ private fun AppRoot() {
                     Screen.BEHAVIOR.name -> BehaviorScreen(back)
                     Screen.STYLE.name -> StyleScreen(back, open)
                     Screen.APPS.name -> AppFilterScreen(back)
+                    Screen.FEATURE_STYLES.name -> FeatureStylesScreen(back)
                 }
             }
 

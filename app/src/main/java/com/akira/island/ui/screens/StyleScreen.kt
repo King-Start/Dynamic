@@ -67,6 +67,19 @@ fun StyleScreen(onBack: () -> Unit, open: (com.akira.island.ui.Screen) -> Unit =
             )
         }
 
+        SectionHeader(tr("Стиль по фичам", "Per-feature style", "Gaya per fitur"))
+        Group {
+            GroupItem(
+                Pos.Single, Icons.Rounded.Palette,
+                tr("Стиль для каждой фичи", "Style per feature", "Gaya per fitur"),
+                tr("У каждого события острова (звонок, зарядка, музыка…) теперь свой стиль.",
+                    "Each island event (call, charging, music…) now has its own style.",
+                    "Setiap event island (panggilan, pengisian, musik…) kini punya gaya sendiri."),
+                color = Tile.Purple,
+                onClick = { open(com.akira.island.ui.Screen.FEATURE_STYLES) },
+            )
+        }
+
         if (s.style == IslandStyle.HYPERISLAND) {
             SectionHeader(tr("Стекло HyperIsland", "HyperIsland glass", "Kaca HyperIsland"))
             Group {

@@ -136,6 +136,7 @@ fun cameraInset(s: IslandSettings): Dp = s.height.dp * 0.5f + 11.5.dp
 
 @Composable
 fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
+    val featureStyle = s.featureStyles[act.id] ?: s.style
     val h = activeHeight(s)
     val gap = compactGap(s)
     val side = sideMax(s)
@@ -380,16 +381,27 @@ private fun MediaCompact(m: MediaInfo, s: IslandSettings) {
  */
 @Composable
 private fun NoticeCompact(n: Notice, s: IslandSettings, wideWidth: Dp) {
-    when {
-        n.style == NoticeStyle.MESSAGE && n.message != null -> MessageCard(n, n.message, s, wideWidth)
-        n.style == NoticeStyle.PAY_DONE -> PayDone(n, s, wideWidth)
-        n.style == NoticeStyle.LIVE && n.live != null -> LiveBanner(n, n.live, s, wideWidth)
-        n.style == NoticeStyle.ALARM && n.alarm != null -> AlarmBanner(n, n.alarm, s, wideWidth)
-        n.style == NoticeStyle.EGG -> EggBanner(n, s)
-        n.style == NoticeStyle.SENT -> SentBanner(n, s, wideWidth)
-        n.style == NoticeStyle.UPDATE -> UpdateCard(n, s, wideWidth)
-        n.style == NoticeStyle.PILL || n.title.isBlank() && n.state == null -> PillNotice(n, s)
-        else -> WideNotice(n, s, wideWidth)
+    val style = s.style
+    val content: @Composable () -> Unit = {
+        when {
+            n.style == NoticeStyle.MESSAGE && n.message != null -> MessageCard(n, n.message, s, wideWidth)
+            n.style == NoticeStyle.PAY_DONE -> PayDone(n, s, wideWidth)
+            n.style == NoticeStyle.LIVE && n.live != null -> LiveBanner(n, n.live, s, wideWidth)
+            n.style == NoticeStyle.ALARM && n.alarm != null -> AlarmBanner(n, n.alarm, s, wideWidth)
+            n.style == NoticeStyle.EGG -> EggBanner(n, s)
+            n.style == NoticeStyle.SENT -> SentBanner(n, s, wideWidth)
+            n.style == NoticeStyle.UPDATE -> UpdateCard(n, s, wideWidth)
+            n.style == NoticeStyle.PILL || n.title.isBlank() && n.state == null -> PillNotice(n, s)
+            else -> WideNotice(n, s, wideWidth)
+        }
+    }
+    // Каждый стиль рисует уведомление по-своему: тело, тени, подсветка — как у «стекла» HyperIsland
+    when (style) {
+        IslandStyle.HYPERISLAND -> HyperNoticeFrame(n, s, wideWidth, content)
+        IslandStyle.NEON -> NeonNoticeFrame(n, s, wideWidth, content)
+        IslandStyle.GRADIENT -> GradientNoticeFrame(n, s, wideWidth, content)
+        IslandStyle.IPHONE -> IphoneNoticeFrame(n, s, wideWidth, content)
+        IslandStyle.AKIRA -> content()
     }
 }
 

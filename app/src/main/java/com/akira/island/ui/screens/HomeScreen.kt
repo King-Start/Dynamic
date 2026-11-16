@@ -518,7 +518,8 @@ fun IslandPreview(expanded: Boolean = false) {
                 .then(if (!expanded && s.fxGlow && !s.reduceEffects) Modifier.drawBehind { islandGlow(demo.accent, 1f, corner.toPx(), s.notch) } else Modifier)
                 .clip(shape)
                 .then(
-                    when (s.style) {
+                    val featureStyle = s.featureStyles[act.id] ?: s.style
+                    when (featureStyle) {
                         IslandStyle.HYPERISLAND ->
                             Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
                         IslandStyle.NEON ->

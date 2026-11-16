@@ -414,10 +414,16 @@ private fun BubbleSlot(slot: State<Dp>, visible: Boolean, act: Act?, s: IslandSe
             .onGloballyPositioned { onBounds(it.boundsInWindow()) },
     ) {
         val drop = TransformOrigin(0f, 0.5f)
+        // Анимация появления пузыря — своя для каждой фичи (featureAnims), иначе общая
+        val anim = act?.id?.let { s.featureAnims[it] }
+        val (enterT, exitT) = if (anim != null) featureAnim(anim) else (
+            (if (s.reduceEffects) fadeIn() else scaleIn(islandSpec(s), initialScale = 0.4f, transformOrigin = drop) + fadeIn(tween(90))) to
+                (if (s.reduceEffects) fadeOut() else scaleOut(islandSpec(s), targetScale = 0.4f, transformOrigin = drop) + fadeOut(tween(120, delayMillis = 60)))
+            )
         AnimatedVisibility(
             visible && act != null,
-            enter = if (s.reduceEffects) fadeIn() else scaleIn(islandSpec(s), initialScale = 0.4f, transformOrigin = drop) + fadeIn(tween(90)),
-            exit = if (s.reduceEffects) fadeOut() else scaleOut(islandSpec(s), targetScale = 0.4f, transformOrigin = drop) + fadeOut(tween(120, delayMillis = 60)),
+            enter = enterT,
+            exit = exitT,
         ) {
             if (act != null) Bubble(act, s)
         }
@@ -550,20 +556,22 @@ private fun IslandBody(
                     Modifier.background(CalibrationRed)
                 } else {
                     val featureStyle = s.featureStyles[primary.id] ?: s.style
+                    // Цвет акцента фичи: свой из featureColors, иначе общий цвет острова
+                    val sc = s.featureColor(primary.id, Color(s.color))
                     when (featureStyle) {
                     com.style.island.data.IslandStyle.HYPERISLAND ->
-                        Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
+                        Modifier.hyperSurface(shape, sc, 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
                     com.style.island.data.IslandStyle.NEON ->
-                        Modifier.neonSurface(shape, Color(s.color), glow = !s.reduceEffects)
+                        Modifier.neonSurface(shape, sc, glow = !s.reduceEffects)
                     com.style.island.data.IslandStyle.GRADIENT ->
-                        Modifier.gradientSurface(shape, Color(s.color))
+                        Modifier.gradientSurface(shape, sc)
                     com.style.island.data.IslandStyle.IPHONE ->
                         Modifier.iphoneSurface(shape)
                     com.style.island.data.IslandStyle.AKIRA ->
                         if (s.liquidGlass) {
-                            Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f, tilt = { tilt.value }) { sheen.value }
+                            Modifier.glassSurface(shape, sc, s.glassOpacity / 100f, tilt = { tilt.value }) { sheen.value }
                         } else {
-                            Modifier.background(Color(s.color))
+                            Modifier.background(sc)
                         }
                 }
             }
@@ -839,14 +847,16 @@ private fun Bubble(act: Act, s: IslandSettings) {
     val haptic = rememberHaptic()
     val tilt = IslandBus.glassTilt.collectAsState()
     val now = rememberNow(500, active = act is Act.TimerA)
+    // Цвет акцента фичи: свой, если задан в featureColors, иначе общий цвет острова
+    val accent = s.featureColor(act.id, Color(s.color))
     Box(
         Modifier
             .size(h)
             .then(if (s.shadow && !s.reduceEffects) Modifier.shadow(8.dp, CircleShape) else Modifier)
             .clip(CircleShape)
             .then(
-                if (s.liquidGlass) Modifier.glassSurface(CircleShape, Color(s.color), s.glassOpacity / 100f, tilt = { tilt.value })
-                else Modifier.background(Color(s.color)),
+                if (s.liquidGlass) Modifier.glassSurface(CircleShape, accent, s.glassOpacity / 100f, tilt = { tilt.value })
+                else Modifier.background(accent),
             )
             .then(if (s.outline) Modifier.border(s.outlineWidth.dp, Color(s.outlineColor), CircleShape) else Modifier)
             .clickable {

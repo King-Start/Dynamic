@@ -120,6 +120,26 @@ enum class IslandStyle(private val ru: String, private val en: String, private v
     val title: String get() = tr(ru, en, id)
 }
 
+/**
+ * Анимация появления/исчезновения для каждой фичи.
+ *  - BOUNCE  — пружинистый отскок (как у AirPods Pro 2);
+ *  - SLIDE   — выезжает сбоку с плавным затуханием;
+ *  - SCALE   — пульсирующий зум с лёгким вращением;
+ *  - SWIPE   — смахивается вверх, как шторка;
+ *  - GLOW    — проявляется из мягкого свечения.
+ */
+@Serializable
+enum class FeatureAnim(private val ru: String, private val en: String, private val id: String) {
+    BOUNCE("Пружина", "Bounce", "Pegas"),
+    SLIDE("Слайд", "Slide", "Geser"),
+    SCALE("Пульс", "Pulse", "Nadi"),
+    SWIPE("Шторка", "Swipe", "Geser Atas"),
+    GLOW("Свечение", "Glow", "Glow"),
+    ;
+
+    val title: String get() = tr(ru, en, id)
+}
+
 @Serializable
 data class IslandSettings(
     val enabled: Boolean = true,
@@ -142,6 +162,16 @@ data class IslandSettings(
         "alarm" to IslandStyle.AKIRA,
         "notice" to IslandStyle.AKIRA,
     ),
+    /**
+     * Анимация появления/исчезновения для каждой фичи (зарядка, звонок, музыка…).
+     * Ключ — [Act.id]. Если фичи нет, берётся глобальная анимация [expandStyle].
+     */
+    val featureAnims: Map<String, FeatureAnim> = emptyMap(),
+    /**
+     * Цвет акцента (обводки/свечения) для каждой фичи, ARGB. Пусто — берётся [color] / палитра Tints.
+     * Позволяет, например, зарядке светиться зелёным, а музыке — цветом обложки.
+     */
+    val featureColors: Map<String, Int> = emptyMap(),
     /** Aplikasi yang diizinkan menampilkan notifikasi di island. Kosong = semua aplikasi. */
     val notifApps: Set<String> = emptySet(),
     /** HyperIsland: яркая кромка и светлая линия по верхней грани */

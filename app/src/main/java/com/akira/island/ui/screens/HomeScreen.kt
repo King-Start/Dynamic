@@ -510,6 +510,20 @@ fun IslandPreview(expanded: Boolean = false) {
         val act = if (expanded) Act.Idle else Act.MediaA(demo)
         val corner = (if (expanded) s.height.dp else activeHeight(s)) / 2
         val shape = islandShape(corner, s)
+        val featureStyle = if (act == null) s.style else (s.featureStyles[act.id] ?: s.style)
+        val featureModifier = when (featureStyle) {
+            IslandStyle.HYPERISLAND ->
+                Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
+            IslandStyle.NEON ->
+                Modifier.neonSurface(shape, Color(s.color), glow = !s.reduceEffects)
+            IslandStyle.GRADIENT ->
+                Modifier.gradientSurface(shape, Color(s.color))
+            IslandStyle.IPHONE ->
+                Modifier.iphoneSurface(shape)
+            IslandStyle.AKIRA ->
+                if (s.liquidGlass) Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f)
+                else Modifier.background(Color(s.color))
+        }
         Box(
             Modifier
                 // «Как вырез» — капсула от самого верха, как на экране
@@ -517,22 +531,7 @@ fun IslandPreview(expanded: Boolean = false) {
                 // «Свечение обложки» видно и на примере
                 .then(if (!expanded && s.fxGlow && !s.reduceEffects) Modifier.drawBehind { islandGlow(demo.accent, 1f, corner.toPx(), s.notch) } else Modifier)
                 .clip(shape)
-                .then(
-                    val featureStyle = s.featureStyles[act.id] ?: s.style
-                    when (featureStyle) {
-                        IslandStyle.HYPERISLAND ->
-                            Modifier.hyperSurface(shape, Color(s.color), 0.92f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight)
-                        IslandStyle.NEON ->
-                            Modifier.neonSurface(shape, Color(s.color), glow = !s.reduceEffects)
-                        IslandStyle.GRADIENT ->
-                            Modifier.gradientSurface(shape, Color(s.color))
-                        IslandStyle.IPHONE ->
-                            Modifier.iphoneSurface(shape)
-                        IslandStyle.AKIRA ->
-                            if (s.liquidGlass) Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f)
-                            else Modifier.background(Color(s.color))
-                    },
-                )
+                .then(featureModifier)
                 .then(if (s.outline) Modifier.border(s.outlineWidth.dp, if (s.outlineFromArt) Tints.Lavender else Color(s.outlineColor), shape) else Modifier)
                 .animateContentSize(),
         ) {

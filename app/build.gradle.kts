@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.akira.island"
+    namespace = "com.style.island"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.akira.island"
+        applicationId = "com.style.island"
         minSdk = 26
         targetSdk = 35
         versionCode = 13

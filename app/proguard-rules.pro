@@ -1,9 +1,9 @@
 # Настройки хранятся через kotlinx.serialization
 -keepattributes *Annotation*, InnerClasses
--keep,includedescriptorclasses class com.akira.island.data.**$$serializer { *; }
--keepclassmembers class com.akira.island.data.** {
+-keep,includedescriptorclasses class com.style.island.data.**$$serializer { *; }
+-keepclassmembers class com.style.island.data.** {
     *** Companion;
 }
--keepclasseswithmembers class com.akira.island.data.** {
+-keepclasseswithmembers class com.style.island.data.** {
     kotlinx.serialization.KSerializer serializer(...);
 }

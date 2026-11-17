@@ -123,17 +123,17 @@ fun Modifier.auroraSurface(shape: Shape, color: Color): Modifier = drawWithCache
     val c3 = shiftHue(color, -60f)
 
     val glowA = Brush.radialGradient(
-        listOf(color.copy(alpha = 0.60f), Color.Transparent),
+        listOf(color.copy(alpha = 0.36f), Color.Transparent),
         center = Offset(w * 0.12f, h * 0.95f),
         radius = w * 0.60f,
     )
     val glowB = Brush.radialGradient(
-        listOf(c2.copy(alpha = 0.50f), Color.Transparent),
+        listOf(c2.copy(alpha = 0.28f), Color.Transparent),
         center = Offset(w * 0.88f, h * 0.05f),
         radius = w * 0.55f,
     )
     val rim = Brush.linearGradient(
-        listOf(color.copy(alpha = 0.95f), c2.copy(alpha = 0.95f), c3.copy(alpha = 0.95f)),
+        listOf(color.copy(alpha = 0.70f), c2.copy(alpha = 0.70f), c3.copy(alpha = 0.70f)),
         start = Offset(0f, 0f),
         end = Offset(w, h),
     )
@@ -143,7 +143,7 @@ fun Modifier.auroraSurface(shape: Shape, color: Color): Modifier = drawWithCache
         drawRect(glowA)
         drawRect(glowB)
         drawContent()
-        drawOutline(outline, rim, style = Stroke(width = 1.4f * dp))
+        drawOutline(outline, rim, style = Stroke(width = 1.2f * dp))
     }
 }
 
@@ -158,9 +158,9 @@ fun Modifier.sunsetSurface(shape: Shape): Modifier = drawWithCache {
     val h = size.height
 
     val body = Brush.linearGradient(
-        0f to Color(0xFFFF8A3D),
-        0.50f to Color(0xFFD6336C),
-        1f to Color(0xFF2A0E45),
+        0f to Color(0xFFC8603A),
+        0.50f to Color(0xFF8E2F5B),
+        1f to Color(0xFF1F1030),
         start = Offset(0f, 0f),
         end = Offset(w, h),
     )
@@ -173,7 +173,7 @@ fun Modifier.sunsetSurface(shape: Shape): Modifier = drawWithCache {
         drawRect(body)
         drawRect(shade)
         drawContent()
-        drawOutline(outline, Color.White.copy(alpha = 0.22f), style = Stroke(width = 1.2f * dp))
+        drawOutline(outline, Color.White.copy(alpha = 0.14f), style = Stroke(width = 1.2f * dp))
     }
 }
 

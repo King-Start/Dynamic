@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.style.island.core.tr
+import com.style.island.data.IslandLayout
 import com.style.island.data.IslandStyle
 import com.style.island.data.SettingsRepo
 import com.style.island.shizuku.ShizukuBridge
@@ -40,6 +41,7 @@ import com.style.island.ui.Ui
 fun StyleScreen(onBack: () -> Unit, open: (com.style.island.ui.Screen) -> Unit = {}) {
     val s by SettingsRepo.state.collectAsState()
     var styleDialog by remember { mutableStateOf(false) }
+    var layoutDialog by remember { mutableStateOf(false) }
 
     Page(tr("Внешний вид острова", "Island style", "Tampilan island"), onBack) {
         IslandPreview()
@@ -51,6 +53,18 @@ fun StyleScreen(onBack: () -> Unit, open: (com.style.island.ui.Screen) -> Unit =
                 tr("Классика, стекло, неон, градиент, аврора, закат, иней…", "Classic, glass, neon, gradient, aurora, sunset, frost…", "Klasik, kaca, neon, gradien, aurora, senja, es kristal…"),
                 color = Tile.Purple, badge = s.style.title,
                 onClick = { styleDialog = true },
+            )
+        }
+
+        SectionHeader(tr("Раскладка", "Layout", "Tata letak"))
+        Group {
+            GroupItem(
+                Pos.Single, Icons.Rounded.Palette, tr("Раскладка содержимого", "Content layout", "Tata letak isi"),
+                tr("Классика, кольцо, с подписью, две строки, полоса или мини — для музыки, таймера, зарядки, звонков и других.",
+                    "Classic, ring, labeled, two lines, bar or mini — for music, timer, charging, calls and more.",
+                    "Klasik, cincin, berlabel, dua baris, garis progres, atau mungil — untuk musik, timer, pengisian, panggilan, dan lainnya."),
+                color = Tile.Indigo, badge = s.layout.title,
+                onClick = { layoutDialog = true },
             )
         }
 
@@ -120,6 +134,14 @@ fun StyleScreen(onBack: () -> Unit, open: (com.style.island.ui.Screen) -> Unit =
             tr("Смена стиля сразу видна на острове и в превью ниже. Данные, события и жесты у всех стилей общие.", "The style change is visible on the island and in the preview below. Data, events and gestures are shared by all styles.", "Perubahan gaya langsung terlihat di island dan pratinjau di bawah. Data, peristiwa, dan gestur sama untuk semua gaya."),
             color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
+    }
+
+    if (layoutDialog) {
+        ChoiceDialog(
+            tr("Раскладка содержимого", "Content layout", "Tata letak isi"),
+            IslandLayout.entries, s.layout, { it.title },
+            { v -> SettingsRepo.update { copy(layout = v) } },
+        ) { layoutDialog = false }
     }
 
     if (styleDialog) {

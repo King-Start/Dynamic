@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ionicons (MIT), https://ionic.io/ionicons -->
+<!-- Ikon island: garis bulat 24x24, ujung dan sambungan membulat -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="512"
-    android:viewportHeight="512">
-    <path
-        android:pathData="M 352 128 H 160 a 32 32 0 0 0 -32 32 v 192 a 32 32 0 0 0 32 32 h 192 a 32 32 0 0 0 32 -32 V 160 a 32 32 0 0 0 -32 -32 z m 0 216 a 8 8 0 0 1 -8 8 H 168 a 8 8 0 0 1 -8 -8 V 168 a 8 8 0 0 1 8 -8 h 176 a 8 8 0 0 1 8 8 z" />
-    <path
-        android:pathData="M168 160 H344 A8 8 0 0 1 352 168 V344 A8 8 0 0 1 344 352 H168 A8 8 0 0 1 160 344 V168 A8 8 0 0 1 168 160 Z"
-        android:fillColor="#FFFFFFFF" />
-    <path
-        android:pathData="M 464 192 a 16 16 0 0 0 0 -32 h -16 v -32 a 64.07 64.07 0 0 0 -64 -64 h -32 V 48 a 16 16 0 0 0 -32 0 v 16 h -48 V 48 a 16 16 0 0 0 -32 0 v 16 h -48 V 48 a 16 16 0 0 0 -32 0 v 16 h -32 a 64.07 64.07 0 0 0 -64 64 v 32 H 48 a 16 16 0 0 0 0 32 h 16 v 48 H 48 a 16 16 0 0 0 0 32 h 16 v 48 H 48 a 16 16 0 0 0 0 32 h 16 v 32 a 64.07 64.07 0 0 0 64 64 h 32 v 16 a 16 16 0 0 0 32 0 v -16 h 48 v 16 a 16 16 0 0 0 32 0 v -16 h 48 v 16 a 16 16 0 0 0 32 0 v -16 h 32 a 64.07 64.07 0 0 0 64 -64 v -32 h 16 a 16 16 0 0 0 0 -32 h -16 v -48 h 16 a 16 16 0 0 0 0 -32 h -16 v -48 z m -80 160 a 32 32 0 0 1 -32 32 H 160 a 32 32 0 0 1 -32 -32 V 160 a 32 32 0 0 1 32 -32 h 192 a 32 32 0 0 1 32 32 z"
-        android:fillColor="#FFFFFFFF" />
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M8.8,6.6 H15.2 Q17.4,6.6 17.4,8.8 V15.2 Q17.4,17.4 15.2,17.4 H8.8 Q6.6,17.4 6.6,15.2 V8.8 Q6.6,6.6 8.8,6.6 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M10.8,10 H13.2 Q14,10 14,10.8 V13.2 Q14,14 13.2,14 H10.8 Q10,14 10,13.2 V10.8 Q10,10 10.8,10 Z" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M9.6,2.6 L9.6,4.8" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M14.4,2.6 L14.4,4.8" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M9.6,19.2 L9.6,21.4" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M14.4,19.2 L14.4,21.4" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M2.6,9.6 L4.8,9.6" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M2.6,14.4 L4.8,14.4" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M19.2,9.6 L21.4,9.6" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M19.2,14.4 L21.4,14.4" />
 </vector>

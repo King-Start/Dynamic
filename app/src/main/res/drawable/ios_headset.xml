@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Значок острова в духе промо-ролика 1.6: простая фигура на сетке 24×24 -->
+<!-- Ikon island: garis bulat 24x24, ujung dan sambungan membulat -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M12,3a9,9 0,0 0,-9 9v3h2.4v-3a6.6,6.6 0,0 1,13.2 0v3H21v-3a9,9 0,0 0,-9 -9z" />
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M4.5,13h1a2,2 0,0 1,2 2v4a2,2 0,0 1,-2 2h-1a2,2 0,0 1,-2 -2v-4a2,2 0,0 1,2 -2z" />
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M18.5,13h1a2,2 0,0 1,2 2v4a2,2 0,0 1,-2 2h-1a2,2 0,0 1,-2 -2v-4a2,2 0,0 1,2 -2z" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.9" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M4,12.6 C4,8.18 7.58,4.6 12,4.6 C16.42,4.6 20,8.18 20,12.6" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M4.9,12.4 H5.3 Q7,12.4 7,14.1 V17.3 Q7,19 5.3,19 H4.9 Q3.2,19 3.2,17.3 V14.1 Q3.2,12.4 4.9,12.4 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M18.7,12.4 H19.1 Q20.8,12.4 20.8,14.1 V17.3 Q20.8,19 19.1,19 H18.7 Q17,19 17,17.3 V14.1 Q17,12.4 18.7,12.4 Z" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M19,19 C19,20.6 17,21.2 14,21.2" />
 </vector>

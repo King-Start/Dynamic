@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tab «Beranda»: kapsul pulau dengan riak gelombang -->
+<!-- Tab «Beranda»: kapsul pulau dengan dua riak -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -7,17 +7,17 @@
     android:viewportHeight="24">
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M7.5,4 H16.5 A3,3 0 0 1 16.5,10 H7.5 A3,3 0 0 1 7.5,4 Z" />
+        android:pathData="M7.6,4 H16.4 A3,3 0 0 1 16.4,10 H7.6 A3,3 0 0 1 7.6,4 Z" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"
-        android:pathData="M8,14 Q12,17.5 16,14" />
+        android:pathData="M8.6,14 Q12,17 15.4,14" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"
-        android:pathData="M4.5,17 Q12,24 19.5,17" />
+        android:pathData="M5.4,17 Q12,23 18.6,17" />
 </vector>

@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -52,7 +54,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.style.island.core.tr
 import com.style.island.data.FeatureAnim
+import com.style.island.data.IslandLayout
 import com.style.island.data.IslandStyle
+import com.style.island.data.layoutFor
 import com.style.island.data.SettingsRepo
 import com.style.island.ui.Group
 import com.style.island.ui.GroupItem
@@ -104,8 +108,10 @@ fun FeatureStylesScreen(onBack: () -> Unit) {
                 val style = s.featureStyles[f.key] ?: s.style
                 val anim = s.featureAnims[f.key]
                 val color = s.featureColors[f.key]
+                val layout = s.layoutFor(f.key)
                 val subtitle = buildString {
                     append(style.title)
+                    if (layout != IslandLayout.CLASSIC) append("  ·  " + layout.title)
                     if (anim != null) append("  ·  " + anim.title)
                     if (color != null) append("  ●")
                 }
@@ -129,6 +135,8 @@ fun FeatureStylesScreen(onBack: () -> Unit) {
             style = s.featureStyles[key] ?: s.style,
             anim = s.featureAnims[key],
             color = s.featureColors[key],
+            layout = s.layoutFor(key),
+            onLayout = { l -> SettingsRepo.update { copy(featureLayouts = featureLayouts + (key to l)) } },
             onStyle = { SettingsRepo.update { copy(featureStyles = featureStyles + (key to it)) } },
             onAnim = { a -> SettingsRepo.update { copy(featureAnims = if (a == null) featureAnims - key else featureAnims + (key to a)) } },
             onColor = { c -> SettingsRepo.update { copy(featureColors = if (c == null) featureColors - key else featureColors + (key to c)) } },
@@ -144,6 +152,8 @@ private fun FeatureEditDialog(
     style: IslandStyle,
     anim: FeatureAnim?,
     color: Int?,
+    layout: IslandLayout,
+    onLayout: (IslandLayout) -> Unit,
     onStyle: (IslandStyle) -> Unit,
     onAnim: (FeatureAnim?) -> Unit,
     onColor: (Int?) -> Unit,
@@ -155,11 +165,17 @@ private fun FeatureEditDialog(
         titleContentColor = Ui.Text,
         title = { Text(title, fontWeight = FontWeight.SemiBold) },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 // --- Стиль ---
                 Text(tr("Стиль", "Style", "Gaya"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
                 IslandStyle.entries.forEach { st ->
                     RadioRow(st.title, st == style) { onStyle(st); onDismiss() }
+                }
+                // --- Tata letak ---
+                Spacer(Modifier.size(10.dp))
+                Text(tr("Раскладка", "Layout", "Tata letak"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
+                IslandLayout.entries.forEach { l ->
+                    RadioRow(l.title, l == layout) { onLayout(l); onDismiss() }
                 }
                 // --- Анимация ---
                 Spacer(Modifier.size(10.dp))

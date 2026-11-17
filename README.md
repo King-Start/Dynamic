@@ -21,6 +21,10 @@ Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan 8 gaya t
 
 Notifikasi dengan balasan · navigasi · pembayaran · musik dengan lirik · panggilan · timer · unduhan · pengisian baterai · senter · event sistem.
 
+## Tata letak
+
+Selain gaya, isi island punya enam tata letak: Klasik, Cincin, Berlabel, Dua baris, Garis progres, dan Mungil. Pilih di **Tampilan → Tata letak** atau per fitur. Berlaku untuk musik, timer, stopwatch, jam, panggilan (termasuk kartu panggilan masuk), senter, unduhan, dan pengisian.
+
 ## Gaya tampilan
 
 Pilih di **Tampilan → Gaya island**, atau atur per fitur (musik, timer, panggilan, pengisian, dll.).

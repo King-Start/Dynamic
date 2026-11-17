@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Значок острова в духе промо-ролика 1.6: простая фигура на сетке 24×24 -->
+<!-- Ikon island: garis bulat 24x24, ujung dan sambungan membulat -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M7.2,4h1.8a1.2,1.2 0,0 1,1.2 1.2v13.6a1.2,1.2 0,0 1,-1.2 1.2h-1.8a1.2,1.2 0,0 1,-1.2 -1.2V5.2A1.2,1.2 0,0 1,7.2 4z" />
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M15,4h1.8a1.2,1.2 0,0 1,1.2 1.2v13.6a1.2,1.2 0,0 1,-1.2 1.2H15a1.2,1.2 0,0 1,-1.2 -1.2V5.2A1.2,1.2 0,0 1,15 4z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M7.9,4.6 H8.9 Q10.4,4.6 10.4,6.1 V17.9 Q10.4,19.4 8.9,19.4 H7.9 Q6.4,19.4 6.4,17.9 V6.1 Q6.4,4.6 7.9,4.6 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M15.1,4.6 H16.1 Q17.6,4.6 17.6,6.1 V17.9 Q17.6,19.4 16.1,19.4 H15.1 Q13.6,19.4 13.6,17.9 V6.1 Q13.6,4.6 15.1,4.6 Z" />
 </vector>

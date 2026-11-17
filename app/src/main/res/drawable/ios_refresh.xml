@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ionicons (MIT), https://ionic.io/ionicons -->
+<!-- Ikon island: garis bulat 24x24, ujung dan sambungan membulat -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="512"
-    android:viewportHeight="512">
-    <path
-        android:pathData="M 320 146 s 24.36 -12 -64 -12 a 160 160 0 1 0 160 160"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="32"
-        android:strokeLineCap="round"
-        android:strokeMiterLimit="10" />
-    <path
-        android:pathData="M 256 58 l 80 80 -80 80"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="32"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M17.75,16.82 C15.6,19.37 12.03,20.21 8.98,18.86 C5.93,17.52 4.13,14.33 4.56,11.02 C5,7.72 7.56,5.09 10.86,4.59 C14.15,4.08 17.39,5.81 18.8,8.83" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.9" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M18.8,4.2 L18.8,8.6 L14.4,8.6" />
 </vector>

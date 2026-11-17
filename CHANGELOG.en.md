@@ -8,11 +8,13 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 
 ## [1.7.0] — 2026-11-17
 
-- 🎨 **Three new island styles**: Aurora (dark body with two soft coloured glows and a tri-colour rim), Sunset (warm orange → magenta → violet) and Frost (translucent blue glass) — Appearance → Island style.
-- 🧩 **HyperIsland, Neon, Gradient and iPhone styles** now work for every feature; the per-feature style no longer forces the original look.
-- 🐞 Fixed a build error (missing accent-colour helper) and the double card drawn inside notifications on non-default styles.
-- 🖼️ **New app icon** and Home tab icon.
-- 🧹 Repository cleanup for GitHub: new README, build workflow no longer tied to a fixed signing certificate.
+- Five new content layouts besides Classic: Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls, flashlight, downloads and charging, and to the incoming-call card. Pick one in Appearance → Layout, or per feature.
+- Three new island styles: Aurora, Sunset and Frost.
+- All island icons redrawn as one consistent rounded line set.
+- New app icon and Home tab icon.
+- HyperIsland, Neon, Gradient and iPhone styles now apply to every feature; the per-feature style no longer forces the original look.
+- Fixed a build error (missing accent-colour helper) and the extra card drawn inside notifications on non-default styles.
+- Repository cleanup: new README, build workflow no longer tied to a fixed signing certificate.
 
 ## [1.6.5] — 2026-10-28
 

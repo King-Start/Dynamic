@@ -104,7 +104,9 @@ import com.style.island.core.NoticeStyle
 import com.style.island.core.Tints
 import com.style.island.core.formatDuration
 import com.style.island.data.IslandSettings
+import com.style.island.data.IslandLayout
 import com.style.island.data.IslandStyle
+import com.style.island.data.layoutFor
 import com.style.island.data.styleFor
 import com.style.island.data.SettingsRepo
 import com.style.island.service.Messages
@@ -142,6 +144,15 @@ fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
     val gap = compactGap(s)
     val side = sideMax(s)
     val icon = h * 0.5f
+    // Tata letak alternatif (Cincin, Berlabel, Dua baris, Garis, Mungil) untuk keadaan yang punya "wajah" sederhana
+    val layout = s.layoutFor(act.id)
+    if (layout != IslandLayout.CLASSIC) {
+        val face = rememberFace(act, s)
+        if (face != null) {
+            FaceLayout(layout, face, s, wideWidth)
+            return
+        }
+    }
     when (act) {
         // Пустая капсула; на экране блокировки слева от камеры — замок
         is Act.Idle -> Box(Modifier.size(s.width.dp, s.height.dp), contentAlignment = Alignment.CenterStart) {
@@ -204,7 +215,7 @@ fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
         }
 
         is Act.CallA -> if (act.c.incoming) {
-            IncomingCall(act.c, s, wideWidth)
+            if (layout == IslandLayout.CLASSIC) IncomingCall(act.c, s, wideWidth) else IncomingCallVariant(layout, act.c, s, wideWidth)
         } else {
             val now = rememberWallNow(500)
             CompactRow(h, gap, side * 2f,
@@ -974,6 +985,277 @@ private fun IncomingCall(c: CallInfo, s: IslandSettings, wideWidth: Dp) {
         Spacer(Modifier.width(11.dp))
         RoundButton(Ios.call, pulse, size = 46.dp, bg = Tints.Green, iconScale = 0.52f) {
             Controls.answerCall(context, c)
+        }
+    }
+}
+
+
+// ───────────────────────── Tata letak alternatif ─────────────────────────
+
+/** Isi sederhana satu keadaan island: dipakai semua tata letak alternatif. */
+private class Face(
+    val accent: Color,
+    val label: String,
+    val value: String?,
+    val progress: Float?,
+    val icon: @Composable (Dp) -> Unit,
+    val trailing: (@Composable (Dp) -> Unit)? = null,
+)
+
+@Composable
+private fun rememberFace(act: Act, s: IslandSettings): Face? = when (act) {
+    is Act.MediaA -> {
+        val m = act.m
+        val accent by animateColorAsState(m.accent, tween(400), label = "faceAccent")
+        Face(
+            accent, m.title, null,
+            if (m.durationMs > 0) (m.positionMs.toFloat() / m.durationMs).coerceIn(0f, 1f) else null,
+            icon = { Art(m.art, it, it * 0.24f) },
+            trailing = { Equalizer(accent, m.playing, s.liveEqualizer, Modifier.size(it * 1.2f, it * 0.8f)) },
+        )
+    }
+    is Act.TimerA -> if (act.t.ringing) null else {
+        val now = rememberNow(250)
+        val left = act.t.left(now)
+        val color = if (left <= 10_000 && !act.t.paused) Tints.Red else Tints.Orange
+        Face(
+            color, tr("Таймер", "Timer", "Timer"), formatDuration(left + 999),
+            if (act.t.totalMs > 0) (left.toFloat() / act.t.totalMs).coerceIn(0f, 1f) else null,
+            icon = { Icon(if (act.t.paused) Ios.pause else Ios.timer, null, tint = color, modifier = Modifier.size(it)) },
+        )
+    }
+    is Act.StopwatchA -> {
+        val now = rememberNow(250, active = act.w.running)
+        Face(
+            Tints.Orange, tr("Секундомер", "Stopwatch", "Stopwatch"), formatDuration(act.w.elapsed(now)), null,
+            icon = { Icon(Ios.stopwatch, null, tint = Tints.Orange, modifier = Modifier.size(it)) },
+        )
+    }
+    is Act.ChronoA -> {
+        val now = rememberWallNow(500)
+        val recording = act.c.isRecording
+        val tint = if (recording) Tints.Red else Tints.Orange
+        Face(
+            tint, if (recording) tr("Запись", "Recording", "Merekam") else tr("Часы", "Clock", "Jam"),
+            formatDuration(act.c.elapsed(now)), null,
+            icon = {
+                if (act.c.pausedMs != null) Icon(Ios.pause, null, tint = tint, modifier = Modifier.size(it))
+                else AppIcon(act.c.icon, it * 1.1f, Ios.timer, tint)
+            },
+        )
+    }
+    is Act.CallA -> if (act.c.incoming) null else {
+        val now = rememberWallNow(500)
+        Face(
+            Tints.Green, tr("Звонок", "Call", "Panggilan"), formatDuration(now - act.c.base), null,
+            icon = { Icon(Ios.call, null, tint = Tints.Green, modifier = Modifier.size(it * 0.9f)) },
+            trailing = { Equalizer(Tints.Green, true, s.liveEqualizer, Modifier.size(it * 1.3f, it * 0.8f), bars = 6) },
+        )
+    }
+    is Act.TorchA -> Face(
+        Tints.Yellow, tr("Фонарик", "Flashlight", "Senter"), null, null,
+        icon = { Icon(Ios.flashlight, null, tint = Tints.Yellow, modifier = Modifier.size(it)) },
+        trailing = { GlowDot(Tints.Yellow, it * 0.5f, !s.reduceEffects) },
+    )
+    is Act.ProgressA -> Face(
+        Tints.Blue, act.p.title,
+        if (act.p.indeterminate) null else "${(act.p.fraction * 100).toInt()}%",
+        if (act.p.indeterminate) null else act.p.fraction,
+        icon = { AppIcon(act.p.icon, it * 1.1f, Ios.download, Tints.Blue) },
+        trailing = if (act.p.indeterminate) {
+            { Icon(Ios.download, null, tint = Tints.Blue, modifier = Modifier.size(it)) }
+        } else null,
+    )
+    is Act.ChargingA -> Face(
+        Tints.Green, tr("Зарядка", "Charging", "Mengisi daya"), "${act.b.level}%", act.b.level / 100f,
+        icon = { Icon(Ios.flash, null, tint = Tints.Green, modifier = Modifier.size(it)) },
+        trailing = { BatteryGlyph(act.b.level, Tints.Green, Modifier.size(it * 1.2f, it * 0.6f)) },
+    )
+    else -> null
+}
+
+@Composable
+private fun FaceLayout(layout: IslandLayout, face: Face, s: IslandSettings, wideWidth: Dp) {
+    val h = activeHeight(s)
+    val gap = compactGap(s)
+    val side = sideMax(s)
+    val icon = h * 0.5f
+    when (layout) {
+        IslandLayout.CLASSIC -> Unit
+
+        // Cincin: ikon di dalam cincin progres, nilai di kanan
+        IslandLayout.RING -> CompactRow(h, gap, side * 1.6f,
+            left = {
+                Box(Modifier.size(icon * 1.32f), contentAlignment = Alignment.Center) {
+                    ProgressRing(face.progress ?: 1f, face.accent, Modifier.fillMaxSize(), stroke = 2.dp, track = face.accent.copy(alpha = 0.18f))
+                    face.icon(icon * 0.62f)
+                }
+            },
+            right = {
+                val v = face.value
+                if (v != null) TimeText(v, face.accent, 15, FontWeight.Bold) else face.trailing?.invoke(icon)
+            },
+        )
+
+        // Berlabel: kapsul lebar, ikon dan nama di kiri kamera, nilai di kanan
+        IslandLayout.LABEL -> Row(
+            Modifier.width(wideWidth).height(h * 1.25f).padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                face.icon(icon)
+                Spacer(Modifier.width(9.dp))
+                Text(face.label, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            Spacer(Modifier.width(gap))
+            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                face.value?.let { TimeText(it, face.accent, 15, FontWeight.Bold) }
+                if (face.value != null && face.trailing != null) Spacer(Modifier.width(6.dp))
+                face.trailing?.invoke(icon * 0.8f)
+            }
+        }
+
+        // Dua baris: nama kecil di atas, nilai di bawah
+        IslandLayout.STACK -> Row(
+            Modifier.width(s.width.dp + s.activeWidth.dp).height(h * 1.3f).padding(horizontal = h * 0.3f),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) { face.icon(icon) }
+            Spacer(Modifier.width(gap))
+            Column(Modifier.weight(1f), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center) {
+                Text(face.label, color = Tints.Gray, fontSize = 10.sp, lineHeight = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                val v = face.value
+                if (v != null) TimeText(v, face.accent, 15, FontWeight.Bold) else face.trailing?.invoke(icon * 0.7f)
+            }
+        }
+
+        // Garis progres: susunan klasik dengan garis tipis di bawah
+        IslandLayout.BAR -> Box(Modifier.width(s.width.dp + s.activeWidth.dp)) {
+            CompactRow(h, gap, side * 1.6f,
+                left = { face.icon(icon) },
+                right = {
+                    val v = face.value
+                    if (v != null) TimeText(v, face.accent, 15, FontWeight.Bold) else face.trailing?.invoke(icon)
+                },
+            )
+            Box(
+                Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp).fillMaxWidth(0.52f).height(2.dp)
+                    .clip(RoundedCornerShape(1.dp)).background(Color.White.copy(alpha = 0.12f)),
+            ) {
+                Box(
+                    Modifier.fillMaxWidth(face.progress ?: 1f).fillMaxHeight().clip(RoundedCornerShape(1.dp))
+                        .background(face.accent.copy(alpha = if (face.progress == null) 0.45f else 0.95f)),
+                )
+            }
+        }
+
+        // Mungil: hanya ikon dan titik, selebar kapsul diam
+        IslandLayout.MINI -> Row(
+            Modifier.width(s.width.dp).height(h).padding(horizontal = h * 0.3f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            face.icon(icon * 0.85f)
+            GlowDot(face.accent, h * 0.2f, !s.reduceEffects)
+        }
+    }
+}
+
+/** Panggilan masuk dengan tata letak alternatif. */
+@Composable
+private fun IncomingCallVariant(layout: IslandLayout, c: CallInfo, s: IslandSettings, wideWidth: Dp) {
+    val context = LocalContext.current
+    val breath = rememberInfiniteTransition(label = "callBreath")
+    val phase by breath.animateFloat(0f, 1f, infiniteRepeatable(tween(1100, easing = LinearEasing)), label = "phase")
+    val mini = layout == IslandLayout.MINI
+    val avatarSize = if (mini) 34.dp else 44.dp
+    val btn = if (mini) 36.dp else 44.dp
+
+    @Composable
+    fun Avatar(size: Dp) = Box(
+        Modifier.size(size).clip(CircleShape)
+            .background(Brush.linearGradient(listOf(Color(0xFF3A3D45), Color(0xFF23252B)))),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (c.avatar != null) Image(c.avatar, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        else Text(c.name.take(1).uppercase(), color = Color.White, fontSize = (size.value * 0.42f).sp, fontWeight = FontWeight.SemiBold)
+    }
+
+    @Composable
+    fun TextButton(text: String, bg: Color, modifier: Modifier, onClick: () -> Unit) = Box(
+        modifier.height(38.dp).clip(CircleShape).background(bg).clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) { Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1) }
+
+    val decline = tr("Отклонить", "Decline", "Tolak")
+    val accept = tr("Принять", "Accept", "Jawab")
+    val title = tr("Входящий вызов", "Incoming call", "Panggilan masuk")
+
+    when (layout) {
+        IslandLayout.STACK -> Column(Modifier.width(wideWidth).padding(horizontal = 18.dp, vertical = 12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Avatar(40.dp)
+                Spacer(Modifier.width(11.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(title, color = Tints.Gray, fontSize = 12.sp, maxLines = 1)
+                    Text(c.name, color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                TextButton(decline, Tints.Red, Modifier.weight(1f)) { Controls.endCall(context, c) }
+                TextButton(accept, Tints.Green, Modifier.weight(1f)) { Controls.answerCall(context, c) }
+            }
+        }
+
+        IslandLayout.LABEL -> Row(
+            Modifier.width(wideWidth).height(callHeight(s)).padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Avatar(40.dp)
+            Spacer(Modifier.width(10.dp))
+            Column(Modifier.weight(1f)) {
+                Text(c.name, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(title, color = Tints.Gray, fontSize = 11.5.sp, maxLines = 1)
+            }
+            TextButton(decline, Tints.Red, Modifier.padding(horizontal = 14.dp)) { Controls.endCall(context, c) }
+            Spacer(Modifier.width(8.dp))
+            TextButton(accept, Tints.Green, Modifier.padding(horizontal = 14.dp)) { Controls.answerCall(context, c) }
+        }
+
+        else -> Box(Modifier.width(if (mini) wideWidth * 0.82f else wideWidth)) {
+            Row(
+                Modifier.fillMaxWidth().height(if (mini) callHeight(s) * 0.82f else callHeight(s)).padding(horizontal = if (mini) 12.dp else 17.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (layout == IslandLayout.RING) {
+                    // Cincin berdenyut di sekeliling avatar selama telepon berdering
+                    Box(Modifier.size(avatarSize + 10.dp), contentAlignment = Alignment.Center) {
+                        Canvas(Modifier.fillMaxSize()) {
+                            val r = size.minDimension / 2
+                            drawCircle(Tints.Green.copy(alpha = 0.55f * (1f - phase)), radius = r * (0.8f + 0.2f * phase), style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
+                        }
+                        Avatar(avatarSize)
+                    }
+                } else Avatar(avatarSize)
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+                    if (!mini) Text(title, color = Tints.Gray, fontSize = 12.sp, maxLines = 1)
+                    Text(c.name, color = Color.White, fontSize = if (mini) 15.sp else 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                RoundButton(Ios.call, size = btn, bg = Tints.Red, iconScale = 0.52f, iconRotation = 135f) { Controls.endCall(context, c) }
+                Spacer(Modifier.width(9.dp))
+                RoundButton(Ios.call, size = btn, bg = Tints.Green, iconScale = 0.52f) { Controls.answerCall(context, c) }
+            }
+            // Garis di bawah: merah ke hijau, denyut pelan
+            if (layout == IslandLayout.BAR) {
+                Box(
+                    Modifier.align(Alignment.BottomCenter).padding(bottom = 5.dp).fillMaxWidth(0.5f).height(2.dp)
+                        .clip(RoundedCornerShape(1.dp))
+                        .graphicsLayer { alpha = 0.45f + 0.4f * kotlin.math.sin(phase * 2 * Math.PI).toFloat().coerceAtLeast(0f) }
+                        .background(Brush.horizontalGradient(listOf(Tints.Red, Tints.Green))),
+                )
+            }
         }
     }
 }

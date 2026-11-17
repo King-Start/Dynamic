@@ -123,6 +123,26 @@ enum class IslandStyle(private val ru: String, private val en: String, private v
     val title: String get() = tr(ru, en, id)
 }
 
+/**
+ * Tata letak konten island. Gaya (IslandStyle) mengatur warna dan permukaan, tata letak mengatur
+ * susunan isi: CLASSIC = bentuk asli, sisanya adalah lima susunan alternatif.
+ */
+@Serializable
+enum class IslandLayout(private val ru: String, private val en: String, private val id: String) {
+    CLASSIC("Классика", "Classic", "Klasik"),
+    RING("Кольцо", "Ring", "Cincin"),
+    LABEL("С подписью", "Labeled", "Berlabel"),
+    STACK("Две строки", "Two lines", "Dua baris"),
+    BAR("Полоса", "Progress bar", "Garis progres"),
+    MINI("Мини", "Mini", "Mungil"),
+    ;
+
+    val title: String get() = tr(ru, en, id)
+}
+
+/** Tata letak untuk satu fitur: override fitur itu kalau ada, kalau tidak ikut tata letak global. */
+fun IslandSettings.layoutFor(id: String): IslandLayout = featureLayouts[id] ?: layout
+
 /** Gaya untuk satu fitur: override fitur itu kalau ada, kalau tidak ikut gaya global. */
 fun IslandSettings.styleFor(id: String): IslandStyle = featureStyles[id] ?: style
 
@@ -159,6 +179,9 @@ data class IslandSettings(
     val style: IslandStyle = IslandStyle.AKIRA,
     /** Стиль для каждого типа активности (фичи): можно выбрать свой для зарядки, будильника, уведомлений и т.д. */
     val featureStyles: Map<String, IslandStyle> = emptyMap(),
+    /** Tata letak isi island (global) dan override per fitur, kunci = Act.id */
+    val layout: IslandLayout = IslandLayout.CLASSIC,
+    val featureLayouts: Map<String, IslandLayout> = emptyMap(),
     /** Versi migrasi featureStyles: 1 = default lama (semua AKIRA) sudah dibersihkan */
     val featureStylesVersion: Int = 0,
     /**

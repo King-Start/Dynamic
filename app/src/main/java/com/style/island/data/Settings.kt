@@ -3,7 +3,7 @@ package com.style.island.data
 import android.content.Context
 import android.content.SharedPreferences
 import com.style.island.core.tr
-import com.style.island.data.IslandStyle
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -103,7 +103,7 @@ enum class AppLanguage {
 }
 
 /**
- * Стиль острова. Выбор из двух внешних видов:
+ * Стиль острова. Выбор из нескольких внешних видов (Dynamic Island, HyperIsland, Neon, Gradient, iPhone, Aurora, Sunset, Frost):
  *  - AKIRA — исходный Dynamic Island (капсула, скругления, Liquid Glass по желанию);
  *  - HYPERISLAND — стиль HyperIsland (гипероис-«стекло» с размытием, бликом и мягкой подсветкой).
  * Каждый рисует своё содержимое, но данные и жесты общие.
@@ -115,10 +115,20 @@ enum class IslandStyle(private val ru: String, private val en: String, private v
     NEON("Неон", "Neon", "Neon"),
     GRADIENT("Градиент", "Gradient", "Gradien"),
     IPHONE("iPhone", "iPhone", "iPhone"),
+    AURORA("Аврора", "Aurora", "Aurora"),
+    SUNSET("Закат", "Sunset", "Senja"),
+    FROST("Иней", "Frost", "Es Kristal"),
     ;
 
     val title: String get() = tr(ru, en, id)
 }
+
+/** Gaya untuk satu fitur: override fitur itu kalau ada, kalau tidak ikut gaya global. */
+fun IslandSettings.styleFor(id: String): IslandStyle = featureStyles[id] ?: style
+
+/** Warna aksen satu fitur: featureColors kalau ada, kalau tidak [fallback]. */
+fun IslandSettings.featureColor(id: String, fallback: Color): Color =
+    featureColors[id]?.let { Color(it) } ?: fallback
 
 /**
  * Анимация появления/исчезновения для каждой фичи.
@@ -148,20 +158,9 @@ data class IslandSettings(
     /** Внешний вид острова: Dynamic Island или HyperIsland */
     val style: IslandStyle = IslandStyle.AKIRA,
     /** Стиль для каждого типа активности (фичи): можно выбрать свой для зарядки, будильника, уведомлений и т.д. */
-    val featureStyles: Map<String, IslandStyle> = mapOf(
-        "media" to IslandStyle.AKIRA,
-        "timer" to IslandStyle.AKIRA,
-        "stopwatch" to IslandStyle.AKIRA,
-        "torch" to IslandStyle.AKIRA,
-        "chrono" to IslandStyle.AKIRA,
-        "progress" to IslandStyle.AKIRA,
-        "call" to IslandStyle.AKIRA,
-        "live" to IslandStyle.AKIRA,
-        "charging" to IslandStyle.AKIRA,
-        "pay" to IslandStyle.AKIRA,
-        "alarm" to IslandStyle.AKIRA,
-        "notice" to IslandStyle.AKIRA,
-    ),
+    val featureStyles: Map<String, IslandStyle> = emptyMap(),
+    /** Versi migrasi featureStyles: 1 = default lama (semua AKIRA) sudah dibersihkan */
+    val featureStylesVersion: Int = 0,
     /**
      * Анимация появления/исчезновения для каждой фичи (зарядка, звонок, музыка…).
      * Ключ — [Act.id]. Если фичи нет, берётся глобальная анимация [expandStyle].
@@ -384,6 +383,10 @@ object SettingsRepo {
         hadSavedSettings = p.contains(KEY)
         p.getString(KEY, null)?.let { raw ->
             runCatching { json.decodeFromString<IslandSettings>(raw) }.onSuccess { _state.value = it }
+        }
+        // Versi lama menyimpan semua fitur = AKIRA, jadi pilihan gaya global (Neon, Gradient, dll.) tak pernah terpakai
+        if (_state.value.featureStylesVersion < 1) {
+            update { copy(featureStyles = featureStyles.filterValues { it != IslandStyle.AKIRA }, featureStylesVersion = 1) }
         }
         // 1.1 и раньше: размеры по умолчанию были меньше, чем у iPhone — переносим, если их не трогали
         val cur = _state.value

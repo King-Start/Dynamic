@@ -105,6 +105,7 @@ import com.style.island.core.Tints
 import com.style.island.core.formatDuration
 import com.style.island.data.IslandSettings
 import com.style.island.data.IslandStyle
+import com.style.island.data.styleFor
 import com.style.island.data.SettingsRepo
 import com.style.island.service.Messages
 import androidx.compose.runtime.collectAsState
@@ -381,7 +382,6 @@ private fun MediaCompact(m: MediaInfo, s: IslandSettings) {
  */
 @Composable
 private fun NoticeCompact(n: Notice, s: IslandSettings, wideWidth: Dp) {
-    val style = s.style
     val content: @Composable () -> Unit = {
         when {
             n.style == NoticeStyle.MESSAGE && n.message != null -> MessageCard(n, n.message, s, wideWidth)
@@ -395,76 +395,8 @@ private fun NoticeCompact(n: Notice, s: IslandSettings, wideWidth: Dp) {
             else -> WideNotice(n, s, wideWidth)
         }
     }
-    // Каждый стиль рисует уведомление по-своему: тело, тени, подсветка — как у «стекла» HyperIsland
-    when (style) {
-        IslandStyle.HYPERISLAND -> HyperNoticeFrame(n, s, wideWidth, content)
-        IslandStyle.NEON -> NeonNoticeFrame(n, s, wideWidth, content)
-        IslandStyle.GRADIENT -> GradientNoticeFrame(n, s, wideWidth, content)
-        IslandStyle.IPHONE -> IphoneNoticeFrame(n, s, wideWidth, content)
-        IslandStyle.AKIRA -> content()
-    }
-}
-
-@Composable
-private fun HyperNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
-    val accent = rememberAccent(s, n.tint)
-    Box(
-        Modifier
-            .width(wideWidth)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(Color(0xFF1A1A2E).copy(alpha = 0.92f), RoundedCornerShape(20.dp))
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun NeonNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
-    val accent = rememberAccent(s, n.tint)
-    Box(
-        Modifier
-            .width(wideWidth)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(Color(0xFF0D0D12), RoundedCornerShape(20.dp))
-            .border(2.dp, accent.copy(alpha = 0.6f), RoundedCornerShape(20.dp))
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun GradientNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
-    val accent = rememberAccent(s, n.tint)
-    Box(
-        Modifier
-            .width(wideWidth)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(
-                Brush.verticalGradient(
-                    0f to accent.copy(alpha = 0.85f),
-                    1f to Color(0xFF0D0D12).copy(alpha = 0.95f),
-                ),
-                RoundedCornerShape(20.dp),
-            )
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun IphoneNoticeFrame(n: Notice, s: IslandSettings, wideWidth: Dp, content: @Composable () -> Unit) {
-    Box(
-        Modifier
-            .width(wideWidth)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(Color(0xFF000000).copy(alpha = 0.96f), RoundedCornerShape(20.dp))
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        content()
-    }
+    // Тело острова (Neon, Gradient, iPhone, HyperIsland…) уже рисуется в IslandOverlay — здесь только содержимое
+    content()
 }
 
 @Composable
@@ -605,12 +537,12 @@ private fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress("
         }
         Spacer(Modifier.height((messageTop(s) - s.height.dp).coerceAtLeast(4.dp)))
         Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.Top) {
-            if (s.style == IslandStyle.HYPERISLAND) HyperNotifIcon(if (hidden) m.copy(avatar = null) else m, n, iconSize * 1.15f, Color(s.color))
+            if (s.styleFor("notice") == IslandStyle.HYPERISLAND) HyperNotifIcon(if (hidden) m.copy(avatar = null) else m, n, iconSize * 1.15f, Color(s.color))
             else NotifIcon(if (hidden) m.copy(avatar = null) else m, n, iconSize, Color(s.color))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(Modifier.fillMaxWidth().heightIn(min = 22.dp), verticalAlignment = Alignment.CenterVertically) {
-                    val hyper = s.style == IslandStyle.HYPERISLAND
+                    val hyper = s.styleFor("notice") == IslandStyle.HYPERISLAND
                     Text(
                         if (hidden) m.appName else n.title, color = Color.White,
                         fontSize = if (hyper) 17.sp else 15.sp, lineHeight = if (hyper) 23.sp else 20.sp,

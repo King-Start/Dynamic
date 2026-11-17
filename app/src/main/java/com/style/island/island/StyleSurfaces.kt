@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
@@ -96,5 +97,119 @@ fun Modifier.iphoneSurface(shape: Shape): Modifier = drawWithCache {
         drawRect(Color(0xFF000000).copy(alpha = 0.96f))
         drawContent()
         drawOutline(outline, Color.White.copy(alpha = 0.10f), style = Stroke(width = 1f * dp))
+    }
+}
+
+/** Geser hue warna aksen (untuk gaya multi-warna) dan jaga agar tetap cerah. */
+private fun shiftHue(c: Color, deg: Float): Color {
+    val hsv = FloatArray(3)
+    android.graphics.Color.colorToHSV(c.toArgb(), hsv)
+    hsv[0] = (hsv[0] + deg + 360f) % 360f
+    hsv[1] = hsv[1].coerceAtLeast(0.45f)
+    hsv[2] = hsv[2].coerceAtLeast(0.85f)
+    return Color(android.graphics.Color.HSVToColor(hsv))
+}
+
+/**
+ * «Aurora»: badan gelap dengan dua cahaya lembut berwarna (aksen dan warna turunannya)
+ * yang bertemu seperti aurora, plus tepi gradien tiga warna.
+ */
+fun Modifier.auroraSurface(shape: Shape, color: Color): Modifier = drawWithCache {
+    val outline = shape.createOutline(size, layoutDirection, this)
+    val dp = 1.dp.toPx()
+    val w = size.width
+    val h = size.height
+    val c2 = shiftHue(color, 70f)
+    val c3 = shiftHue(color, -60f)
+
+    val glowA = Brush.radialGradient(
+        listOf(color.copy(alpha = 0.60f), Color.Transparent),
+        center = Offset(w * 0.12f, h * 0.95f),
+        radius = w * 0.60f,
+    )
+    val glowB = Brush.radialGradient(
+        listOf(c2.copy(alpha = 0.50f), Color.Transparent),
+        center = Offset(w * 0.88f, h * 0.05f),
+        radius = w * 0.55f,
+    )
+    val rim = Brush.linearGradient(
+        listOf(color.copy(alpha = 0.95f), c2.copy(alpha = 0.95f), c3.copy(alpha = 0.95f)),
+        start = Offset(0f, 0f),
+        end = Offset(w, h),
+    )
+
+    onDrawWithContent {
+        drawRect(Color(0xFF07060D))
+        drawRect(glowA)
+        drawRect(glowB)
+        drawContent()
+        drawOutline(outline, rim, style = Stroke(width = 1.4f * dp))
+    }
+}
+
+/**
+ * «Senja»: gradien hangat jingga → magenta → ungu tua, dengan bayangan lembut di bawah
+ * agar teks putih tetap terbaca. Warna tetap, tidak mengikuti aksen.
+ */
+fun Modifier.sunsetSurface(shape: Shape): Modifier = drawWithCache {
+    val outline = shape.createOutline(size, layoutDirection, this)
+    val dp = 1.dp.toPx()
+    val w = size.width
+    val h = size.height
+
+    val body = Brush.linearGradient(
+        0f to Color(0xFFFF8A3D),
+        0.50f to Color(0xFFD6336C),
+        1f to Color(0xFF2A0E45),
+        start = Offset(0f, 0f),
+        end = Offset(w, h),
+    )
+    val shade = Brush.verticalGradient(
+        0f to Color.Transparent,
+        1f to Color.Black.copy(alpha = 0.30f),
+    )
+
+    onDrawWithContent {
+        drawRect(body)
+        drawRect(shade)
+        drawContent()
+        drawOutline(outline, Color.White.copy(alpha = 0.22f), style = Stroke(width = 1.2f * dp))
+    }
+}
+
+/**
+ * «Es Kristal»: kaca biru gelap setengah bening dengan kilau diagonal dan tepi putih tipis,
+ * seperti panel kaca beku.
+ */
+fun Modifier.frostSurface(shape: Shape): Modifier = drawWithCache {
+    val outline = shape.createOutline(size, layoutDirection, this)
+    val dp = 1.dp.toPx()
+    val w = size.width
+    val h = size.height
+
+    val body = Brush.verticalGradient(
+        0f to Color(0xFF16263D).copy(alpha = 0.90f),
+        1f to Color(0xFF0A1220).copy(alpha = 0.94f),
+    )
+    val sheen = Brush.linearGradient(
+        0f to Color.White.copy(alpha = 0.20f),
+        0.45f to Color.White.copy(alpha = 0.04f),
+        1f to Color.Transparent,
+        start = Offset(0f, 0f),
+        end = Offset(w, h),
+    )
+    val rim = Brush.linearGradient(
+        0f to Color.White.copy(alpha = 0.60f),
+        0.5f to Color.White.copy(alpha = 0.12f),
+        1f to Color.White.copy(alpha = 0.35f),
+        start = Offset(0f, 0f),
+        end = Offset(w, h),
+    )
+
+    onDrawWithContent {
+        drawRect(body)
+        drawRect(sheen)
+        drawContent()
+        drawOutline(outline, rim, style = Stroke(width = 1.2f * dp))
     }
 }

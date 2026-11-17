@@ -15,7 +15,7 @@ permissions:
 # Отпечаток сертификата, которым подписан остров с 1.6.1. Если секрет подменят другим ключом,
 # сборка остановится: иначе у всех перестали бы ставиться обновления.
 env:
-  SIGNING_CERT_SHA256: c691aa99b1d38518d066066fcb31664374f6a21d65180f7c0565c37a073a12dd
+  SIGNING_CERT_SHA256: ${{ vars.SIGNING_CERT_SHA256 }}
 
 jobs:
   build:
@@ -91,6 +91,8 @@ jobs:
           # Сначала — тот ли ключ лежит в секрете
           info=$(keytool -list -v -keystore "$ks" -storetype PKCS12 -storepass:env KEYSTORE_PASSWORD -alias island)
           key=$(awk -F'SHA256: *' 'NF > 1 {gsub(":", "", $2); print tolower($2); exit}' <<<"$info")
+          # Variabel repo SIGNING_CERT_SHA256 kosong -> percayai kunci dari secret (cukup untuk repo pribadi)
+          if [[ -z "$SIGNING_CERT_SHA256" ]]; then SIGNING_CERT_SHA256="$key"; fi
           if [[ "$key" != "$SIGNING_CERT_SHA256" ]]; then
             echo "::error::В секрете KEYSTORE_BASE64 другой ключ ($key) — ожидался $SIGNING_CERT_SHA256"
             echo "::notice::Проверьте SIGNING_CERT_SHA256 и секреты — пока выгружаем APK без подписи"

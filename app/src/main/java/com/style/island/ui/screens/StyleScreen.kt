@@ -34,9 +34,7 @@ import com.style.island.ui.Tile
 import com.style.island.ui.Ui
 
 /**
- * «Внешний вид»: выбор одного из двух стилей острова.
- *  - Dynamic Island — исходная капсула (Akira);
- *  - HyperIsland — стиль HyperIsland (тёмное «стекло» с направленным светом и яркой кромкой).
+ * «Внешний вид»: выбор стиля острова — Dynamic Island, HyperIsland, Neon, Gradient, iPhone, Aurora, Sunset, Frost.
  */
 @Composable
 fun StyleScreen(onBack: () -> Unit, open: (com.style.island.ui.Screen) -> Unit = {}) {
@@ -50,7 +48,7 @@ fun StyleScreen(onBack: () -> Unit, open: (com.style.island.ui.Screen) -> Unit =
         Group {
             GroupItem(
                 Pos.Single, Icons.Rounded.Palette, tr("Стиль острова", "Island style", "Gaya island"),
-                tr("Dynamic Island — исходная капсула. HyperIsland — «стекло» в стиле HyperOS", "Dynamic Island is the original capsule. HyperIsland is HyperOS-style glass", "Dynamic Island — kapsul asli. HyperIsland — kaca gaya HyperOS"),
+                tr("Классика, стекло, неон, градиент, аврора, закат, иней…", "Classic, glass, neon, gradient, aurora, sunset, frost…", "Klasik, kaca, neon, gradien, aurora, senja, es kristal…"),
                 color = Tile.Purple, badge = s.style.title,
                 onClick = { styleDialog = true },
             )
@@ -119,7 +117,7 @@ fun StyleScreen(onBack: () -> Unit, open: (com.style.island.ui.Screen) -> Unit =
         }
 
         Text(
-            tr("Смена стиля сразу видна на острове и в превью ниже. Данные, события и жесты у обоих стилей общие.", "The style change is visible on the island and in the preview below. Data, events and gestures are shared by both styles.", "Perubahan gaya langsung terlihat di island dan pratinjau di bawah. Data, peristiwa, dan gestur sama untuk kedua gaya."),
+            tr("Смена стиля сразу видна на острове и в превью ниже. Данные, события и жесты у всех стилей общие.", "The style change is visible on the island and in the preview below. Data, events and gestures are shared by all styles.", "Perubahan gaya langsung terlihat di island dan pratinjau di bawah. Data, peristiwa, dan gestur sama untuk semua gaya."),
             color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
     }

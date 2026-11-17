@@ -83,7 +83,10 @@ import com.style.island.island.Act
 import com.style.island.island.CompactContent
 import com.style.island.island.Ios
 import com.style.island.island.activeHeight
+import com.style.island.island.auroraSurface
+import com.style.island.island.frostSurface
 import com.style.island.island.glassSurface
+import com.style.island.island.sunsetSurface
 import com.style.island.island.gradientSurface
 import com.style.island.island.hyperSurface
 import com.style.island.island.iphoneSurface
@@ -520,6 +523,12 @@ fun IslandPreview(expanded: Boolean = false) {
                 Modifier.gradientSurface(shape, Color(s.color))
             IslandStyle.IPHONE ->
                 Modifier.iphoneSurface(shape)
+            IslandStyle.AURORA ->
+                Modifier.auroraSurface(shape, Color(s.color))
+            IslandStyle.SUNSET ->
+                Modifier.sunsetSurface(shape)
+            IslandStyle.FROST ->
+                Modifier.frostSurface(shape)
             IslandStyle.AKIRA ->
                 if (s.liquidGlass) Modifier.glassSurface(shape, Color(s.color), s.glassOpacity / 100f)
                 else Modifier.background(Color(s.color))

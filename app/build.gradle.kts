@@ -13,8 +13,8 @@ android {
         applicationId = "com.style.island"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "1.7.0-merged"
+        versionCode = 14
+        versionName = "1.7.0"
         buildConfigField("String", "ISLAND_STYLE_AKIRA", "\"Dynamic Island\"")
         buildConfigField("String", "ISLAND_STYLE_HYPER", "\"HyperIsland\"")
     }

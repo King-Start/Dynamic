@@ -100,6 +100,7 @@ import com.style.island.core.NoticeStyle
 import com.style.island.core.Tints
 import com.style.island.core.tr
 import com.style.island.data.Elasticity
+import com.style.island.data.featureColor
 import com.style.island.data.ExpandStyle
 import com.style.island.data.IslandSettings
 import com.style.island.data.SettingsRepo
@@ -567,6 +568,12 @@ private fun IslandBody(
                         Modifier.gradientSurface(shape, sc)
                     com.style.island.data.IslandStyle.IPHONE ->
                         Modifier.iphoneSurface(shape)
+                    com.style.island.data.IslandStyle.AURORA ->
+                        Modifier.auroraSurface(shape, sc)
+                    com.style.island.data.IslandStyle.SUNSET ->
+                        Modifier.sunsetSurface(shape)
+                    com.style.island.data.IslandStyle.FROST ->
+                        Modifier.frostSurface(shape)
                     com.style.island.data.IslandStyle.AKIRA ->
                         if (s.liquidGlass) {
                             Modifier.glassSurface(shape, sc, s.glassOpacity / 100f, tilt = { tilt.value }) { sheen.value }

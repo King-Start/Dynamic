@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Вкладка «Главная»: телефон с островом наверху -->
+<!-- Tab «Beranda»: kapsul pulau dengan riak gelombang -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M7.5,4 H16.5 A3,3 0 0 1 16.5,10 H7.5 A3,3 0 0 1 7.5,4 Z" />
+    <path
         android:fillColor="#00000000"
         android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="2"
-        android:pathData="M8.5,2.5 H15.5 A3,3 0 0 1 18.5,5.5 V18.5 A3,3 0 0 1 15.5,21.5 H8.5 A3,3 0 0 1 5.5,18.5 V5.5 A3,3 0 0 1 8.5,2.5 Z" />
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M8,14 Q12,17.5 16,14" />
     <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M10.3,5 H13.7 A1.15,1.15 0 0 1 13.7,7.3 H10.3 A1.15,1.15 0 0 1 10.3,5 Z" />
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M4.5,17 Q12,24 19.5,17" />
 </vector>

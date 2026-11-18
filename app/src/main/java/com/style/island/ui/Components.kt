@@ -1,6 +1,7 @@
 package com.style.island.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,22 +65,15 @@ fun IslandSwitch(checked: Boolean, onChange: (Boolean) -> Unit, enabled: Boolean
         checked = checked,
         onCheckedChange = onChange,
         enabled = enabled,
-        thumbContent = {
-            Icon(
-                if (checked) Icons.Rounded.Check else Icons.Rounded.Close,
-                contentDescription = null,
-                modifier = Modifier.size(SwitchDefaults.IconSize),
-            )
-        },
         colors = SwitchDefaults.colors(
-            checkedThumbColor = Ui.OnPrimary,
-            checkedTrackColor = Ui.Primary,
-            checkedIconColor = Ui.Primary,
-            checkedBorderColor = Ui.Primary,
-            uncheckedThumbColor = Ui.Outline,
-            uncheckedTrackColor = Ui.Bg,
-            uncheckedBorderColor = Ui.Outline,
-            uncheckedIconColor = Ui.Bg,
+            checkedThumbColor = Color.White,
+            checkedTrackColor = Ui.Primary.copy(alpha = 0.85f),
+            checkedBorderColor = Color.Transparent,
+            uncheckedThumbColor = Ui.Sub,
+            uncheckedTrackColor = Ui.IconBg,
+            uncheckedBorderColor = Ui.Divider,
+            disabledCheckedTrackColor = Ui.Primary.copy(alpha = 0.3f),
+            disabledUncheckedTrackColor = Ui.IconBg,
         ),
     )
 }
@@ -102,20 +98,21 @@ fun Page(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (onBack != null) {
                 Box(
-                    Modifier.size(48.dp).clip(CircleShape).background(Ui.Card).clickable(onClick = onBack),
+                    Modifier.size(42.dp).clip(CircleShape).background(Ui.Card).border(1.dp, Ui.Hairline, CircleShape).clickable(onClick = onBack),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(Icons.AutoMirrored.Rounded.ArrowBack, tr("Назад", "Back"), tint = Ui.Text)
                 }
-                Spacer(Modifier.width(18.dp))
+                Spacer(Modifier.width(14.dp))
             } else {
                 Spacer(Modifier.width(4.dp))
             }
             Text(
                 title,
                 color = Ui.Text,
-                fontSize = if (onBack != null) 26.sp else 28.sp,
-                lineHeight = 30.sp,
+                fontSize = if (onBack != null) 24.sp else 30.sp,
+                lineHeight = 32.sp,
+                letterSpacing = (-0.3).sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f),
             )
@@ -127,14 +124,14 @@ fun Page(
         if (subtitle != null) {
             Text(
                 subtitle,
-                color = Ui.Sub.copy(alpha = 0.6f),
-                fontSize = 14.sp,
+                color = Ui.Sub,
+                fontSize = 13.sp,
                 modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Start,
             )
         }
-        Spacer(Modifier.height(18.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
+        Spacer(Modifier.height(16.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
         Spacer(Modifier.height(130.dp))
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
     }
@@ -155,8 +152,15 @@ fun PillAction(text: String, onClick: () -> Unit) {
 
 @Composable
 fun SectionHeader(text: String, trailing: (@Composable () -> Unit)? = null) {
-    Row(Modifier.fillMaxWidth().padding(start = 4.dp, top = 8.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(text, color = Ui.Primary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+    Row(Modifier.fillMaxWidth().padding(start = 6.dp, top = 14.dp, end = 4.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text.uppercase(),
+            color = Ui.Sub,
+            fontSize = 12.sp,
+            letterSpacing = 0.9.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f),
+        )
         trailing?.invoke()
     }
 }
@@ -176,26 +180,20 @@ fun ToggleCard(
         Modifier
             .fillMaxWidth()
             .alpha(if (enabled) 1f else 0.45f)
-            .clip(RoundedCornerShape(28.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(Ui.Card)
+            .border(1.dp, Ui.Hairline, RoundedCornerShape(20.dp))
             .clickable(enabled = enabled) { onChange(!checked) }
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier.size(48.dp).clip(RoundedCornerShape(16.dp)).background(color ?: Ui.IconBg),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, null, tint = if (color != null) Color.White else Ui.Text, modifier = Modifier.size(if (color != null) 28.dp else 24.dp))
-        }
-        Spacer(Modifier.width(16.dp))
+        ItemIcon(icon, color, size = 42.dp)
+        Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
-            Text(title, color = Ui.Text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, lineHeight = 21.sp)
-            if (subtitle != null) Text(subtitle, color = Ui.Sub, fontSize = 14.sp, lineHeight = 18.sp)
+            Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 20.sp)
+            if (subtitle != null) Text(subtitle, color = Ui.Sub, fontSize = 13.5.sp, lineHeight = 18.sp)
         }
         Spacer(Modifier.width(12.dp))
-        VerticalDivider(Modifier.height(36.dp), thickness = 2.dp, color = Ui.Divider)
-        Spacer(Modifier.width(14.dp))
         IslandSwitch(checked, onChange, enabled)
     }
 }
@@ -210,26 +208,30 @@ fun posOf(index: Int, count: Int): Pos = when {
 }
 
 private fun Pos.shape(): Shape = when (this) {
-    Pos.Single -> RoundedCornerShape(28.dp)
-    Pos.First -> RoundedCornerShape(28.dp, 28.dp, 6.dp, 6.dp)
-    Pos.Middle -> RoundedCornerShape(6.dp)
-    Pos.Last -> RoundedCornerShape(6.dp, 6.dp, 28.dp, 28.dp)
+    Pos.Single -> RoundedCornerShape(20.dp)
+    Pos.First -> RoundedCornerShape(20.dp, 20.dp, 5.dp, 5.dp)
+    Pos.Middle -> RoundedCornerShape(5.dp)
+    Pos.Last -> RoundedCornerShape(5.dp, 5.dp, 20.dp, 20.dp)
 }
 
 /** Склеенные строки настроек: одна карточка со скруглением сверху и снизу. */
 @Composable
 fun Group(content: @Composable ColumnScope.() -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(3.dp), content = content)
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp), content = content)
 }
 
-/** Значок пункта: белый на цветном скруглённом квадрате, как в «Настройках» iPhone; без цвета — просто значок. */
+/** Ikon item: latar tipis berwarna dengan ikon berwarna sama, tanpa blok warna solid; tanpa warna = ikon polos. */
 @Composable
-fun ItemIcon(icon: ImageVector, color: Color?, size: Dp = 36.dp) {
+fun ItemIcon(icon: ImageVector, color: Color?, size: Dp = 38.dp) {
     if (color == null) {
-        Icon(icon, null, tint = Ui.Text, modifier = Modifier.size(26.dp))
+        Icon(icon, null, tint = Ui.Text, modifier = Modifier.size(24.dp))
     } else {
-        Box(Modifier.size(size).clip(RoundedCornerShape(size * 0.3f)).background(color), contentAlignment = Alignment.Center) {
-            Icon(icon, null, tint = Color.White, modifier = Modifier.size(size * 0.6f))
+        val shape = RoundedCornerShape(size * 0.32f)
+        Box(
+            Modifier.size(size).clip(shape).background(color.copy(alpha = 0.14f)).border(1.dp, color.copy(alpha = 0.22f), shape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, null, tint = lerp(color, Color.White, 0.18f), modifier = Modifier.size(size * 0.56f))
         }
     }
 }
@@ -251,20 +253,21 @@ fun GroupItem(
             .fillMaxWidth()
             .clip(pos.shape())
             .background(Ui.Card)
+            .border(1.dp, Ui.Hairline, pos.shape())
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 20.dp, vertical = 18.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ItemIcon(icon, color)
-        Spacer(Modifier.width(if (color != null) 16.dp else 22.dp))
+        Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             // Метка переносится на следующую строку целиком, а название не разрывается
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(title, color = Ui.Text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, lineHeight = 21.sp,
+                Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 20.sp,
                     modifier = Modifier.align(Alignment.CenterVertically))
                 if (badge != null) Badge(badge, Modifier.align(Alignment.CenterVertically))
             }
-            if (subtitle != null) Text(subtitle, color = Ui.Sub, fontSize = 15.sp, lineHeight = 19.sp)
+            if (subtitle != null) Text(subtitle, color = Ui.Sub, fontSize = 13.5.sp, lineHeight = 18.sp)
         }
         if (trailing != null) {
             Spacer(Modifier.width(12.dp))
@@ -305,7 +308,7 @@ fun Badge(text: String, modifier: Modifier = Modifier, color: Color = Tile.Orang
 @Composable
 fun IconAction(icon: ImageVector, description: String, onClick: () -> Unit) {
     Box(
-        Modifier.size(48.dp).clip(CircleShape).background(Ui.Card).clickable(onClick = onClick),
+        Modifier.size(42.dp).clip(CircleShape).background(Ui.Card).border(1.dp, Ui.Hairline, CircleShape).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, description, tint = Ui.Text)
@@ -329,13 +332,14 @@ fun GroupSlider(
             .fillMaxWidth()
             .clip(pos.shape())
             .background(Ui.Card)
-            .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 6.dp),
+            .border(1.dp, Ui.Hairline, pos.shape())
+            .padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ItemIcon(icon, color)
-            Spacer(Modifier.width(if (color != null) 16.dp else 22.dp))
-            Text(title, color = Ui.Text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            Text(label, color = Ui.Sub, fontSize = 15.sp)
+            Spacer(Modifier.width(14.dp))
+            Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Text(label, color = Ui.Sub, fontSize = 14.sp)
         }
         Slider(
             value = value,
@@ -371,12 +375,13 @@ fun GroupStepSlider(
             .fillMaxWidth()
             .clip(pos.shape())
             .background(Ui.Card)
-            .padding(start = 20.dp, end = 14.dp, top = 16.dp, bottom = 8.dp),
+            .border(1.dp, Ui.Hairline, pos.shape())
+            .padding(start = 16.dp, end = 12.dp, top = 14.dp, bottom = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ItemIcon(icon, color)
-            Spacer(Modifier.width(if (color != null) 16.dp else 22.dp))
-            Text(title, color = Ui.Text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Spacer(Modifier.width(14.dp))
+            Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
             if (action != null) {
                 Text(
                     action.first, color = Ui.Primary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold,
@@ -438,7 +443,8 @@ fun <T> ChoiceDialog(
         onDismissRequest = onDismiss,
         containerColor = Ui.Card,
         titleContentColor = Ui.Text,
-        title = { Text(title) },
+        shape = RoundedCornerShape(24.dp),
+        title = { Text(title, fontWeight = FontWeight.SemiBold) },
         text = {
             Column {
                 options.forEach { o ->

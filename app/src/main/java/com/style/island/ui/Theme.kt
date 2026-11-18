@@ -5,33 +5,36 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-/** Тёмная тема с лавандовым акцентом, как на скриншотах. */
+/** Tema gelap netral dengan satu aksen teal, mengikuti logo aplikasi. */
 object Ui {
-    val Bg = Color(0xFF16151B)
-    val Card = Color(0xFF27262D)
-    val IconBg = Color(0xFF35343D)
-    val Primary = Color(0xFFC6C3F7)
-    val OnPrimary = Color(0xFF2F2D4C)
-    val Text = Color(0xFFE6E1E9)
-    val Sub = Color(0xFFA9A6B1)
-    val Divider = Color(0xFF47464F)
-    val Nav = Color(0xFF25242B)
+    val Bg = Color(0xFF0D0E11)
+    val Card = Color(0xFF16171B)
+    val IconBg = Color(0xFF202228)
+    val Primary = Color(0xFF3DD6C6)
+    val OnPrimary = Color(0xFF04201D)
+    val Text = Color(0xFFECEDEF)
+    val Sub = Color(0xFF8E929B)
+    val Divider = Color(0xFF2A2D33)
+    val Nav = Color(0xFF1A1C21)
     val Pink = Color(0xFFFBDDF4)
-    val Outline = Color(0xFF908D99)
+    val Outline = Color(0xFF5C616B)
+
+    /** Garis tipis di tepi kartu dan panel */
+    val Hairline = Color(0x14FFFFFF)
 }
 
-/** Цвета значков у пунктов настроек — как в «Настройках» iPhone: у каждой категории свой. */
+/** Warna ikon per kategori: sengaja diredam agar tidak norak; dipakai sebagai latar tipis dan warna ikon. */
 object Tile {
-    val Blue = Color(0xFF0A84FF)
-    val Green = Color(0xFF34C759)
-    val Orange = Color(0xFFFF9F0A)
-    val Red = Color(0xFFFF453A)
-    val Purple = Color(0xFFBF5AF2)
-    val Pink = Color(0xFFFF2D78)
-    val Teal = Color(0xFF30B0C7)
-    val Indigo = Color(0xFF5E5CE6)
-    val Yellow = Color(0xFFFFB800)
-    val Gray = Color(0xFF8E8E93)
+    val Blue = Color(0xFF5B9CF6)
+    val Green = Color(0xFF4CBF7F)
+    val Orange = Color(0xFFEBA04A)
+    val Red = Color(0xFFEA6A62)
+    val Purple = Color(0xFFA582EE)
+    val Pink = Color(0xFFE76C9E)
+    val Teal = Color(0xFF3DD6C6)
+    val Indigo = Color(0xFF7782EE)
+    val Yellow = Color(0xFFDDB444)
+    val Gray = Color(0xFF8A8F99)
 }
 
 @Composable

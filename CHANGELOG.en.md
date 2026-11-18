@@ -14,6 +14,7 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 - New app icon and Home tab icon.
 - HyperIsland, Neon, Gradient and iPhone styles now apply to every feature; the per-feature style no longer forces the original look.
 - Fixed a build error (missing accent-colour helper) and the extra card drawn inside notifications on non-default styles.
+- App theme redesigned: neutral dark palette with a single teal accent, tinted icon tiles, flatter cards with hairline borders, simpler switches. The bottom bar selector is now a liquid-glass pill that follows your finger when pressed and dragged, stretches with motion and magnifies the icons under it.
 - Repository cleanup: new README, build workflow no longer tied to a fixed signing certificate.
 
 ## [1.6.5] — 2026-10-28

@@ -52,6 +52,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color as GColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.roundToInt
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -200,45 +230,176 @@ private fun AppRoot() {
 /** Вкладки: главная, что показывает остров, как он выглядит, и о приложении — отдельно от настроек. */
 private fun tabTitles() = listOf(tr("Главная", "Home"), tr("Функции", "Features"), tr("Оформление", "Appearance"), tr("О приложении", "About"))
 
+/**
+ * Navigasi bawah dengan pil "liquid glass": pil kaca mengikuti jari saat ditekan dan digeser,
+ * membesar dan melar sedikit saat bergerak, ikon di bawahnya ikut membesar seperti lensa,
+ * lalu menetap di tab terdekat saat dilepas.
+ */
 @Composable
 private fun BottomBar(selected: Int, onSelect: (Int) -> Unit) {
+    val titles = tabTitles()
     val icons = listOf(
         ImageVector.vectorResource(R.drawable.ic_tab_island),
         Icons.Rounded.Widgets,
         Icons.Rounded.Palette,
         Icons.Rounded.Info,
     )
-    Row(
+    val count = titles.size
+    val density = LocalDensity.current
+    val haptic = LocalHapticFeedback.current
+    val barShape = RoundedCornerShape(32.dp)
+    val barHeight = 60.dp
+    val onSelectState by rememberUpdatedState(onSelect)
+
+    var widthPx by remember { mutableFloatStateOf(0f) }
+    val slot = if (widthPx > 0f) widthPx / count else 1f
+    fun centerOf(i: Int) = slot * i + slot / 2f
+
+    var pressed by remember { mutableStateOf(false) }
+    var live by remember { mutableFloatStateOf(0f) }
+
+    // Saat ditekan pil mengikuti jari dengan sedikit tertinggal (efek cairan); saat dilepas ia memantul ke tab terpilih
+    val goal = if (pressed) live else centerOf(selected)
+    val center by animateFloatAsState(
+        targetValue = goal,
+        animationSpec = when {
+            widthPx == 0f -> snap()
+            pressed -> spring(dampingRatio = 0.82f, stiffness = 900f)
+            else -> spring(dampingRatio = 0.62f, stiffness = 420f)
+        },
+        label = "navCenter",
+    )
+    val press by animateFloatAsState(
+        targetValue = if (pressed) 1f else 0f,
+        animationSpec = spring(dampingRatio = 0.55f, stiffness = 520f),
+        label = "navPress",
+    )
+    val hovered = ((if (pressed) live else center) / slot).toInt().coerceIn(0, count - 1)
+    LaunchedEffect(hovered, pressed) {
+        if (pressed) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+    }
+
+    Box(
         Modifier
             .navigationBarsPadding()
-            .padding(start = 14.dp, end = 14.dp, bottom = 12.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
             .widthIn(max = 480.dp)
             .fillMaxWidth()
-            .shadow(16.dp, RoundedCornerShape(30.dp))
-            .clip(RoundedCornerShape(30.dp))
-            .background(Ui.Nav)
+            .shadow(18.dp, barShape, ambientColor = GColor.Black, spotColor = GColor.Black)
+            .clip(barShape)
+            .background(Brush.verticalGradient(listOf(GColor(0xFF25272D).copy(alpha = 0.95f), GColor(0xFF17181C).copy(alpha = 0.97f))))
+            .border(1.dp, Brush.verticalGradient(listOf(GColor.White.copy(alpha = 0.16f), GColor.White.copy(alpha = 0.04f))), barShape)
             .padding(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        tabTitles().forEachIndexed { i, title ->
-            val on = i == selected
-            val pill by animateColorAsState(if (on) Ui.Primary else Ui.Nav, tween(200), label = "tab")
-            Column(
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(barHeight)
+                .onSizeChanged { widthPx = it.width.toFloat() }
+                .pointerInput(count) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        val w = size.width.toFloat()
+                        live = down.position.x.coerceIn(0f, w)
+                        pressed = true
+                        do {
+                            val event = awaitPointerEvent()
+                            val change = event.changes.firstOrNull { it.id == down.id }
+                            if (change != null && change.pressed) {
+                                live = change.position.x.coerceIn(0f, w)
+                                change.consume()
+                            }
+                        } while (event.changes.any { it.pressed })
+                        val index = (live / (w / count)).toInt().coerceIn(0, count - 1)
+                        pressed = false
+                        onSelectState(index)
+                    }
+                },
+        ) {
+            // Pil kaca: melebar dan sedikit melar mengikuti kecepatan gerak
+            val lag = kotlin.math.abs(goal - center)
+            val pillW = slot * 0.9f * (1f + 0.14f * press) + lag * 0.35f
+            val pillH = barHeight - 8.dp + 6.dp * press
+            GlassPill(
+                press,
                 Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(24.dp))
-                    .clickable { onSelect(i) }
-                    .padding(vertical = 6.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(Modifier.size(width = 56.dp, height = 32.dp).clip(CircleShape).background(pill), contentAlignment = Alignment.Center) {
-                    Icon(icons[i], title, tint = if (on) Ui.OnPrimary else Ui.Text, modifier = Modifier.size(24.dp))
+                    .offset { IntOffset((center - pillW / 2f).roundToInt(), ((barHeight.toPx() - pillH.toPx()) / 2f).roundToInt()) }
+                    .size(with(density) { pillW.toDp() }, pillH),
+            )
+
+            Row(Modifier.fillMaxSize()) {
+                titles.forEachIndexed { i, title ->
+                    val active = if (pressed) hovered == i else selected == i
+                    val tint by animateColorAsState(if (active) Ui.Text else Ui.Sub, tween(160), label = "tabTint")
+                    // Ikon yang dekat dengan pil membesar seperti dilihat lewat lensa kaca
+                    val proximity = (1f - kotlin.math.abs(centerOf(i) - center) / slot).coerceIn(0f, 1f)
+                    val scale = 1f + 0.18f * press * proximity
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .semantics(mergeDescendants = true) {
+                                role = Role.Tab
+                                this.selected = i == selected
+                                onClick { onSelectState(i); true }
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            icons[i], null, tint = tint,
+                            modifier = Modifier.size(24.dp).graphicsLayer { scaleX = scale; scaleY = scale },
+                        )
+                        Spacer(Modifier.height(3.dp))
+                        TabLabel(title, tint, active)
+                    }
                 }
-                Spacer(Modifier.height(4.dp))
-                TabLabel(title, if (on) Ui.Text else Ui.Sub, on)
             }
         }
     }
+}
+
+/** Pil kaca: isi tipis ber-aksen, tepi terang di sudut atas, kilau di bagian atas, dan cahaya saat ditekan. */
+@Composable
+private fun GlassPill(press: Float, modifier: Modifier) {
+    val shape = RoundedCornerShape(26.dp)
+    Box(
+        modifier
+            .drawBehind {
+                val g = 9.dp.toPx() * press
+                if (g > 0.5f) {
+                    drawRoundRect(
+                        Ui.Primary.copy(alpha = 0.16f * press),
+                        topLeft = Offset(-g, -g),
+                        size = Size(size.width + 2 * g, size.height + 2 * g),
+                        cornerRadius = CornerRadius(26.dp.toPx() + g),
+                    )
+                }
+            }
+            .clip(shape)
+            .background(
+                Brush.verticalGradient(
+                    listOf(Ui.Primary.copy(alpha = 0.22f + 0.10f * press), Ui.Primary.copy(alpha = 0.07f + 0.06f * press)),
+                ),
+            )
+            .border(
+                1.dp,
+                Brush.linearGradient(listOf(GColor.White.copy(alpha = 0.55f), GColor.White.copy(alpha = 0.08f), GColor.White.copy(alpha = 0.30f))),
+                shape,
+            )
+            .drawBehind {
+                // Kilau spekuler di bagian atas pil
+                drawOval(
+                    Brush.radialGradient(
+                        listOf(GColor.White.copy(alpha = 0.26f + 0.18f * press), GColor.Transparent),
+                        center = Offset(size.width * 0.32f, size.height * 0.14f),
+                        radius = size.width * 0.5f,
+                    ),
+                    topLeft = Offset(size.width * 0.08f, 2.dp.toPx()),
+                    size = Size(size.width * 0.84f, size.height * 0.46f),
+                )
+            },
+    )
 }
 
 /** Подпись вкладки: если не влезает (крупный шрифт Android), чуть уменьшается, а не обрезается. */

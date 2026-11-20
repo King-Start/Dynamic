@@ -21,6 +21,10 @@ Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan 8 gaya t
 
 Notifikasi dengan balasan · navigasi · pembayaran · musik dengan lirik · panggilan · timer · unduhan · pengisian baterai · senter · event sistem.
 
+## Desain notifikasi
+
+Kartu notifikasi aplikasi punya delapan desain dengan bentuk yang berbeda, bukan sekadar efek: Klasik, Kartu, Ticker (teks berjalan di samping kamera), Obrolan (pesan dalam gelembung), Spanduk, Terbelah, Judul besar, dan Lencana. Balasan dan tombol aksi berfungsi di semua desain. Pilih lewat galeri di **Tampilan → Desain notifikasi**, atau pakai **Tema siap pakai** untuk mengatur gaya, tata letak, dan notifikasi sekaligus.
+
 ## Tata letak
 
 Selain gaya, isi island punya enam tata letak: Klasik, Cincin, Berlabel, Dua baris, Garis progres, dan Mungil. Pilih di **Tampilan → Tata letak** atau per fitur. Berlaku untuk musik, timer, stopwatch, jam, panggilan (termasuk kartu panggilan masuk), senter, unduhan, dan pengisian.

@@ -8,6 +8,8 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 
 ## [1.7.0] — 2026-11-17
 
+- Eight notification designs with genuinely different forms: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner (accent stripe), Split (accent block with the icon), Headline (pure typography) and Badge (tiny capsule). Replies and action buttons work in every design. Pick one from the live gallery in Appearance → Notification design.
+- Ready-made themes (Classic, Studio, Ticker, Chat, Editorial, Banner, Split, Mini): one tap sets style, content layout and notification design together. New installs start with Studio-like defaults (Ring layout, Card notifications).
 - Five new content layouts besides Classic: Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls, flashlight, downloads and charging, and to the incoming-call card. Pick one in Appearance → Layout, or per feature.
 - Three new island styles: Aurora, Sunset and Frost.
 - All island icons redrawn as one consistent rounded line set.

@@ -21,6 +21,10 @@ A Dynamic Island–style capsule around the camera of any Android phone, with 8 
 
 Notifications with reply · navigation · payments · music with lyrics · calls · timers · downloads · charging · flashlight · system events.
 
+## Notification designs
+
+App notification cards come in eight genuinely different forms, not just effects: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner, Split, Headline and Badge. Replies and action buttons work in every design. Pick one from the gallery in **Appearance → Notification design**, or use **Ready-made themes** to set style, layout and notifications at once.
+
 ## Layouts
 
 Besides the style, the island content has six layouts: Classic, Ring, Labeled, Two lines, Progress bar and Mini. Pick one in **Appearance → Layout** or per feature. They apply to music, timer, stopwatch, clock, calls (including the incoming-call card), flashlight, downloads and charging.

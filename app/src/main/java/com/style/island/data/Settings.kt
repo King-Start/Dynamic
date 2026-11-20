@@ -124,6 +124,43 @@ enum class IslandStyle(private val ru: String, private val en: String, private v
 }
 
 /**
+ * Desain kartu notifikasi aplikasi. Bentuk dan susunannya berbeda-beda, bukan sekadar efek:
+ * CLASSIC = kartu asli, sisanya tujuh desain lain.
+ */
+@Serializable
+enum class NoticeDesign(private val ru: String, private val en: String, private val id: String) {
+    CLASSIC("Классика", "Classic", "Klasik"),
+    CARD("Карточка", "Card", "Kartu"),
+    TICKER("Бегущая строка", "Ticker", "Ticker"),
+    CHAT("Чат", "Chat", "Obrolan"),
+    BANNER("Баннер", "Banner", "Spanduk"),
+    SPLIT("Разделённая", "Split", "Terbelah"),
+    HEADLINE("Заголовок", "Headline", "Judul besar"),
+    BADGE("Значок", "Badge", "Lencana"),
+    ;
+
+    val title: String get() = tr(ru, en, id)
+}
+
+/** Tema siap pakai: satu ketukan mengatur gaya, tata letak isi, dan desain notifikasi sekaligus. */
+enum class IslandPreset(
+    private val ru: String, private val en: String, private val id: String,
+    val style: IslandStyle, val layout: IslandLayout, val notice: NoticeDesign,
+) {
+    CLASSIC("Классика", "Classic", "Klasik", IslandStyle.AKIRA, IslandLayout.CLASSIC, NoticeDesign.CLASSIC),
+    STUDIO("Студия", "Studio", "Studio", IslandStyle.IPHONE, IslandLayout.RING, NoticeDesign.CARD),
+    TICKER("Бегущая строка", "Ticker", "Ticker", IslandStyle.AKIRA, IslandLayout.BAR, NoticeDesign.TICKER),
+    CHAT("Чат", "Chat", "Obrolan", IslandStyle.FROST, IslandLayout.LABEL, NoticeDesign.CHAT),
+    EDITORIAL("Редакция", "Editorial", "Editorial", IslandStyle.AKIRA, IslandLayout.STACK, NoticeDesign.HEADLINE),
+    BANNER("Баннер", "Banner", "Spanduk", IslandStyle.AURORA, IslandLayout.LABEL, NoticeDesign.BANNER),
+    SPLIT("Разделённая", "Split", "Terbelah", IslandStyle.HYPERISLAND, IslandLayout.RING, NoticeDesign.SPLIT),
+    MINI("Мини", "Mini", "Mungil", IslandStyle.AKIRA, IslandLayout.MINI, NoticeDesign.BADGE),
+    ;
+
+    val title: String get() = tr(ru, en, id)
+}
+
+/**
  * Tata letak konten island. Gaya (IslandStyle) mengatur warna dan permukaan, tata letak mengatur
  * susunan isi: CLASSIC = bentuk asli, sisanya adalah lima susunan alternatif.
  */
@@ -180,7 +217,9 @@ data class IslandSettings(
     /** Стиль для каждого типа активности (фичи): можно выбрать свой для зарядки, будильника, уведомлений и т.д. */
     val featureStyles: Map<String, IslandStyle> = emptyMap(),
     /** Tata letak isi island (global) dan override per fitur, kunci = Act.id */
-    val layout: IslandLayout = IslandLayout.CLASSIC,
+    val layout: IslandLayout = IslandLayout.RING,
+    /** Desain kartu notifikasi aplikasi */
+    val noticeDesign: NoticeDesign = NoticeDesign.CARD,
     val featureLayouts: Map<String, IslandLayout> = emptyMap(),
     /** Versi migrasi featureStyles: 1 = default lama (semua AKIRA) sudah dibersihkan */
     val featureStylesVersion: Int = 0,

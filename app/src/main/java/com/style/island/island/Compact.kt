@@ -106,6 +106,7 @@ import com.style.island.core.formatDuration
 import com.style.island.data.IslandSettings
 import com.style.island.data.IslandLayout
 import com.style.island.data.IslandStyle
+import com.style.island.data.NoticeDesign
 import com.style.island.data.layoutFor
 import com.style.island.data.styleFor
 import com.style.island.data.SettingsRepo
@@ -519,6 +520,31 @@ private fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress("
     // Плашка ушла — ввод закрывается, окну возвращается «неактивный» режим
     DisposableEffect(n.id) {
         onDispose { if (IslandBus.reply.value?.noticeId == n.id) IslandBus.reply.value = null }
+    }
+
+    // Desain lain: Kartu, Ticker, Obrolan, Spanduk, Terbelah, Judul besar, Lencana
+    val design = s.noticeDesign
+    if (design != NoticeDesign.CLASSIC) {
+        val view = MsgView(
+            appName = m.appName,
+            title = if (hidden) m.appName else n.title,
+            text = when {
+                hidden -> tr("Содержимое скрыто", "Content hidden", "Isi disembunyikan")
+                else -> m.text
+            },
+            avatar = if (hidden) null else m.avatar,
+            appIcon = m.appIcon,
+            fallback = n.icon,
+            accent = accent,
+            count = if (hidden) 1 else m.history.size,
+            time = tr("сейчас", "now", "sekarang"),
+        )
+        Box(Modifier.animateContentSize(islandSpec(s))) {
+            NoticeDesignBody(design, view, s, messageWidth()) {
+                MessageFooter(n, m, accent, replyAction, locked, chips = design == NoticeDesign.CARD || design == NoticeDesign.SPLIT)
+            }
+        }
+        return
     }
 
     Column(
@@ -1255,6 +1281,63 @@ private fun IncomingCallVariant(layout: IslandLayout, c: CallInfo, s: IslandSett
                         .graphicsLayer { alpha = 0.45f + 0.4f * kotlin.math.sin(phase * 2 * Math.PI).toFloat().coerceAtLeast(0f) }
                         .background(Brush.horizontalGradient(listOf(Tints.Red, Tints.Green))),
                 )
+            }
+        }
+    }
+}
+
+
+/** Kolom balasan atau tombol aksi notifikasi untuk desain selain Klasik. [chips] = tombol kapsul, bukan teks. */
+@Composable
+private fun MessageFooter(n: Notice, m: AppMessage, accent: Color, replyAction: MsgAction?, locked: Boolean, chips: Boolean) {
+    val context = LocalContext.current
+    if (replyAction != null) {
+        Box(Modifier.padding(top = 6.dp)) {
+            ReplyField(replyAction, accent) { text ->
+                if (text.isBlank()) return@ReplyField
+                if (Controls.sendReply(context, replyAction, text)) {
+                    Messages.onReplied(m.key)
+                    IslandBus.reply.value = null
+                    IslandBus.notice.value = null
+                    IslandBus.post(
+                        Notice(
+                            title = tr("Отправлено", "Sent", "Terkirim"),
+                            state = n.title,
+                            icon = n.icon,
+                            tint = accent,
+                            style = NoticeStyle.SENT,
+                            extraMs = -SettingsRepo.current.noticeDurationMs / 2L,
+                        ),
+                    )
+                } else {
+                    Toast.makeText(context, tr("Не удалось отправить ответ", "Couldn't send the reply", "Gagal mengirim balasan"), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    } else if (m.actions.isNotEmpty() && !locked) {
+        Row(
+            Modifier.fillMaxWidth().padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (chips) 8.dp else 18.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            m.actions.forEachIndexed { i, a ->
+                val click: () -> Unit = {
+                    if (a.isReply) {
+                        IslandBus.reply.value = ReplyState(n.id, a)
+                    } else {
+                        Controls.send(context, a.intent)
+                        IslandBus.notice.value = null
+                    }
+                }
+                if (chips) {
+                    Box(
+                        Modifier.clip(CircleShape).background(accent.copy(alpha = 0.18f)).clickable { click() }
+                            .padding(horizontal = 14.dp, vertical = 7.dp),
+                        contentAlignment = Alignment.Center,
+                    ) { Text(a.title, color = accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                } else {
+                    TextAction(a.title, accent, if (i == m.actions.lastIndex) Modifier.weight(1f, fill = false) else Modifier, size = 14.sp) { click() }
+                }
             }
         }
     }

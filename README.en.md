@@ -5,7 +5,7 @@
 <h1 align="center">Dynamic Island for Android</h1>
 
 <p align="center">
-A Dynamic Island–style capsule around the camera of any Android phone, with 8 visual styles.
+A Dynamic Island–style capsule around the camera of any Android phone, with eight notification designs, six content layouts and several island styles.
 </p>
 
 <p align="center">
@@ -19,30 +19,17 @@ A Dynamic Island–style capsule around the camera of any Android phone, with 8 
 
 ## Features
 
-Notifications with reply · navigation · payments · music with lyrics · calls · timers · downloads · charging · flashlight · system events.
+Notifications with reply · navigation · payments · music with synced lyrics · calls · timers · downloads · charging · flashlight · hotspot · weather · pinned apps and contacts · Brief (clock, steps, weather) · Liquid Glass · custom colours and fonts · system events.
 
 ## Notification designs
 
-App notification cards come in eight genuinely different forms, not just effects: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner, Split, Headline and Badge. Replies and action buttons work in every design. Pick one from the gallery in **Appearance → Notification design**, or use **Ready-made themes** to set style, layout and notifications at once.
+App notification cards come in eight genuinely different forms, not just effects: Classic, Card, Ticker (scrolling text beside the camera), Chat, Banner, Split, Headline and Badge. Replies and action buttons work in every design. Pick one from the live gallery in **Appearance → Theme and layout**, or use **Ready-made themes** to set style, layout and notifications at once.
 
-## Layouts
+## Layouts and styles
 
-Besides the style, the island content has six layouts: Classic, Ring, Labeled, Two lines, Progress bar and Mini. Pick one in **Appearance → Layout** or per feature. They apply to music, timer, stopwatch, clock, calls (including the incoming-call card), flashlight, downloads and charging.
+Besides the notification design, the island content has six layouts: Classic, Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls (including the incoming-call card), flashlight, downloads and charging.
 
-## Styles
-
-Pick one in **Appearance → Island style**, or set it per feature (music, timer, calls, charging…).
-
-| Style | Look |
-|---|---|
-| Dynamic Island | Classic black capsule, optional Liquid Glass |
-| HyperIsland | HyperOS-style dark glass with directional light |
-| Neon | Dark body with a glowing edge |
-| Gradient | Gradient from the accent colour to dark |
-| iPhone | Clean black, thin edge |
-| Aurora | Two soft coloured glows and a tri-colour rim |
-| Sunset | Orange → magenta → deep violet |
-| Frost | Translucent dark-blue glass |
+Island styles: Standard (follows the Color and border settings, with Liquid Glass), Neon, Gradient, iPhone, Aurora, Sunset and Frost.
 
 ## Install
 
@@ -64,10 +51,6 @@ To publish a new version, raise `versionName` and `versionCode` in `app/build.gr
 
 ## Credits
 
-This project builds on the following open-source work. Thanks to the original authors:
+This project builds on the open-source **Dynamic Island** app by [Arusaky (formerly Akira9021)](https://github.com/Arusaky/Dynamic-Island-). Thanks to the original author and contributors. Third-party components: [Inter](docs/licenses/Inter-OFL.txt) font (OFL) and [Ionicons](docs/licenses/Ionicons-MIT.txt) icons (MIT); other notices are in `app/src/main/assets/third-party`.
 
-- **Dynamic Island** by [Akira9021](https://github.com/Akira9021/Dynamic-Island-) — the overlay app base.
-- **HyperIsland** by [1812z](https://github.com/1812z/HyperIsland) — reference for the HyperOS glass style.
-- [Inter](docs/licenses/Inter-OFL.txt) font (OFL) and [Ionicons](docs/licenses/Ionicons-MIT.txt) icons (MIT).
-
-The app logo and the Aurora, Sunset and Frost styles were made for this version.
+The app logo, the icon set, the app theme, the notification designs, the content layouts and the Neon, Gradient, iPhone, Aurora, Sunset and Frost styles were made for this version.

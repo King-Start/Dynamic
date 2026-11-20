@@ -13,10 +13,9 @@ android {
         applicationId = "com.style.island"
         minSdk = 26
         targetSdk = 35
-        versionCode = 14
-        versionName = "1.7.0"
-        buildConfigField("String", "ISLAND_STYLE_AKIRA", "\"Dynamic Island\"")
-        buildConfigField("String", "ISLAND_STYLE_HYPER", "\"HyperIsland\"")
+        versionCode = 17
+        versionName = "1.8.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // Ключ подписи в репозитории не хранится: релизный APK собирается без подписи,
@@ -39,11 +38,19 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
+        aidl = true
     }
 }
 
 dependencies {
+    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:provider:13.1.5")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
     val composeBom = platform("androidx.compose:compose-bom:2024.12.01")
     implementation(composeBom)
 
@@ -64,9 +71,4 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-
-    // Shizuku: даёт права системы (доступ к службе, перезапуск процессов) без root.
-    // Приложение работает и без Shizuku; с Shizuku больше функций доступно.
-    implementation("dev.rikka.shizuku:api:13.1.5")
-    implementation("dev.rikka.shizuku:provider:13.1.5")
 }

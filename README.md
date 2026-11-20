@@ -5,7 +5,7 @@
 <h1 align="center">Dynamic Island untuk Android</h1>
 
 <p align="center">
-Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan 8 gaya tampilan.
+Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan delapan desain notifikasi, enam tata letak isi, dan beberapa gaya island.
 </p>
 
 <p align="center">
@@ -19,30 +19,17 @@ Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan 8 gaya t
 
 ## Fitur
 
-Notifikasi dengan balasan · navigasi · pembayaran · musik dengan lirik · panggilan · timer · unduhan · pengisian baterai · senter · event sistem.
+Notifikasi dengan balasan · navigasi · pembayaran · musik dengan lirik sinkron · panggilan · timer · unduhan · pengisian baterai · senter · hotspot · cuaca · aplikasi dan kontak tersemat · Brief (jam, langkah, cuaca) · Liquid Glass · warna dan font kustom · event sistem.
 
 ## Desain notifikasi
 
-Kartu notifikasi aplikasi punya delapan desain dengan bentuk yang berbeda, bukan sekadar efek: Klasik, Kartu, Ticker (teks berjalan di samping kamera), Obrolan (pesan dalam gelembung), Spanduk, Terbelah, Judul besar, dan Lencana. Balasan dan tombol aksi berfungsi di semua desain. Pilih lewat galeri di **Tampilan → Desain notifikasi**, atau pakai **Tema siap pakai** untuk mengatur gaya, tata letak, dan notifikasi sekaligus.
+Kartu notifikasi aplikasi punya delapan desain dengan bentuk yang berbeda, bukan sekadar efek: Klasik, Kartu, Ticker (teks berjalan di samping kamera), Obrolan, Spanduk, Terbelah, Judul besar, dan Lencana. Balasan dan tombol aksi berfungsi di semua desain. Pilih lewat galeri di **Tampilan → Tema dan tata letak**, atau pakai **Tema siap pakai** untuk mengatur gaya, tata letak, dan notifikasi sekaligus.
 
-## Tata letak
+## Tata letak dan gaya
 
-Selain gaya, isi island punya enam tata letak: Klasik, Cincin, Berlabel, Dua baris, Garis progres, dan Mungil. Pilih di **Tampilan → Tata letak** atau per fitur. Berlaku untuk musik, timer, stopwatch, jam, panggilan (termasuk kartu panggilan masuk), senter, unduhan, dan pengisian.
+Selain desain notifikasi, isi island punya enam tata letak: Klasik, Cincin, Berlabel, Dua baris, Garis progres, dan Mungil. Berlaku untuk musik, timer, stopwatch, jam, panggilan (termasuk kartu panggilan masuk), senter, unduhan, dan pengisian.
 
-## Gaya tampilan
-
-Pilih di **Tampilan → Gaya island**, atau atur per fitur (musik, timer, panggilan, pengisian, dll.).
-
-| Gaya | Ciri |
-|---|---|
-| Dynamic Island | Kapsul hitam klasik, Liquid Glass opsional |
-| HyperIsland | Kaca gelap gaya HyperOS dengan cahaya terarah |
-| Neon | Badan gelap dengan tepi bercahaya |
-| Gradient | Gradien dari warna aksen ke gelap |
-| iPhone | Hitam bersih, tepi tipis |
-| Aurora | Dua cahaya lembut berwarna dan tepi tiga warna |
-| Senja | Jingga → magenta → ungu tua |
-| Es Kristal | Kaca biru gelap setengah bening |
+Gaya island: Standar (mengikuti pengaturan Warna dan bingkai, dengan Liquid Glass), Neon, Gradien, iPhone, Aurora, Senja, dan Es Kristal.
 
 ## Instalasi
 
@@ -64,10 +51,6 @@ Untuk merilis versi baru, naikkan `versionName` dan `versionCode` di `app/build.
 
 ## Kredit
 
-Proyek ini dikembangkan dari karya sumber terbuka berikut. Terima kasih kepada pembuat aslinya:
+Proyek ini dikembangkan dari aplikasi sumber terbuka **Dynamic Island** oleh [Arusaky (dulu Akira9021)](https://github.com/Arusaky/Dynamic-Island-). Terima kasih kepada pembuat asli dan para kontributor. Komponen pihak ketiga: font [Inter](docs/licenses/Inter-OFL.txt) (OFL) dan ikon [Ionicons](docs/licenses/Ionicons-MIT.txt) (MIT); pemberitahuan lain ada di `app/src/main/assets/third-party`.
 
-- **Dynamic Island** oleh [Akira9021](https://github.com/Akira9021/Dynamic-Island-) — basis aplikasi overlay.
-- **HyperIsland** oleh [1812z](https://github.com/1812z/HyperIsland) — acuan gaya kaca HyperOS.
-- Font [Inter](docs/licenses/Inter-OFL.txt) (OFL) dan ikon [Ionicons](docs/licenses/Ionicons-MIT.txt) (MIT).
-
-Logo aplikasi dan gaya Aurora, Senja, dan Es Kristal dibuat khusus untuk versi ini.
+Logo aplikasi, set ikon, tema aplikasi, desain notifikasi, tata letak isi, serta gaya Neon, Gradien, iPhone, Aurora, Senja, dan Es Kristal dibuat khusus untuk versi ini.

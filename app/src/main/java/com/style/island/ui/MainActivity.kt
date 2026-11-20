@@ -1,7 +1,9 @@
 package com.style.island.ui
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.service.quicksettings.TileService
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
@@ -94,15 +96,15 @@ import com.style.island.R
 import com.style.island.core.LangScope
 import com.style.island.core.tr
 import com.style.island.data.SettingsRepo
+import com.style.island.data.LauncherVisibility
 import com.style.island.ui.screens.AnimScreen
+import com.style.island.ui.screens.SearchScreen
 import com.style.island.ui.screens.AppInfoScreen
 import com.style.island.ui.screens.BannersScreen
 import com.style.island.ui.screens.BanksScreen
 import com.style.island.ui.screens.BehaviorScreen
 import com.style.island.ui.screens.CapsuleScreen
 import com.style.island.ui.screens.CardsScreen
-import com.style.island.ui.screens.AppFilterScreen
-import com.style.island.ui.screens.FeatureStylesScreen
 import com.style.island.ui.screens.ColorsScreen
 import com.style.island.ui.screens.DiagScreen
 import com.style.island.ui.screens.EffectsScreen
@@ -110,48 +112,70 @@ import com.style.island.ui.screens.EventsScreen
 import com.style.island.ui.screens.FeaturesScreen
 import com.style.island.ui.screens.GesturesScreen
 import com.style.island.ui.screens.HomeScreen
+import com.style.island.ui.screens.SupportScreen
 import com.style.island.ui.screens.IdeaScreen
 import com.style.island.ui.screens.InstructionScreen
 import com.style.island.ui.screens.KeepAliveScreen
 import com.style.island.ui.screens.LookScreen
 import com.style.island.ui.screens.LyricsScreen
+import com.style.island.ui.screens.LauncherScreen
 import com.style.island.ui.screens.NotificationsScreen
+import com.style.island.ui.screens.NotifAppsScreen
+import com.style.island.ui.screens.NotifDiagScreen
+import com.style.island.ui.screens.FontScreen
 import com.style.island.ui.screens.PayDiagScreen
 import com.style.island.ui.screens.PermissionsScreen
 import com.style.island.ui.screens.SizeScreen
-import com.style.island.ui.screens.StyleScreen
 import com.style.island.ui.screens.TestsScreen
 import com.style.island.service.KeepAliveService
 import com.style.island.update.UpdateChecker
 
 enum class Screen {
     CARDS, EVENTS, GESTURES, LYRICS, SIZE, COLORS, INSTRUCTION, ABOUT, DIAG, LOOK, ANIM, EFFECTS, BANNERS,
-    PERMISSIONS, TESTS, NOTIFICATIONS, BEHAVIOR, PAYDIAG, KEEPALIVE, BANKS, STYLE, APPS, FEATURE_STYLES,
+    STYLE, PERMISSIONS, TESTS, NOTIFICATIONS, BEHAVIOR, PAYDIAG, KEEPALIVE, BANKS, NOTIF_APPS, NOTIF_DIAG, FONT, EXTRAS, SEARCH, LAUNCHER, SUPPORT,
 }
 
 class MainActivity : ComponentActivity() {
+    private var launcherSettingsRequest by mutableIntStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SettingsRepo.init(this)
+        openSettingsFrom(intent)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
         )
-        setContent { IslandTheme { AppRoot() } }
+        setContent { IslandTheme { AppRoot(launcherSettingsRequest) } }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openSettingsFrom(intent)
+    }
+
+    private fun openSettingsFrom(intent: Intent) {
+        LauncherVisibility.onSettingsOpened(this, intent)
+        if (intent.action == TileService.ACTION_QS_TILE_PREFERENCES ||
+            intent.action == Intent.ACTION_APPLICATION_PREFERENCES
+        ) launcherSettingsRequest++
     }
 
     override fun onResume() {
         super.onResume()
+        LauncherVisibility.refresh(this)
         // «Не выгружать остров»: из фона Android может не запустить службу — запускаем, пока приложение открыто
         KeepAliveService.sync(this)
     }
 }
 
 @Composable
-private fun AppRoot() {
+private fun AppRoot(launcherSettingsRequest: Int) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var stack by remember { mutableStateOf(listOf<Screen>()) }
     var forward by remember { mutableStateOf(true) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val open: (Screen) -> Unit = {
         forward = true
         stack = stack + it
@@ -161,6 +185,13 @@ private fun AppRoot() {
         stack = stack.dropLast(1)
     }
     BackHandler(enabled = stack.isNotEmpty(), onBack = back)
+    LaunchedEffect(launcherSettingsRequest) {
+        if (launcherSettingsRequest > 0) {
+            tab = 3
+            forward = true
+            stack = listOf(Screen.LAUNCHER)
+        }
+    }
 
     // Раз в 3 часа спрашиваем GitHub, не вышла ли новая версия; после обновления — «Что нового»
     val context = LocalContext.current
@@ -185,10 +216,12 @@ private fun AppRoot() {
                 label = "nav",
             ) { k ->
                 when (k) {
+                    Screen.SEARCH.name -> SearchScreen(searchQuery, { searchQuery = it }, back, open)
                     "tab0" -> HomeScreen(open)
                     "tab1" -> FeaturesScreen(open)
                     "tab2" -> CapsuleScreen(open)
                     "tab3" -> AppInfoScreen(open)
+                    Screen.EXTRAS.name -> com.style.island.ui.screens.ExtrasScreen(back)
                     Screen.CARDS.name -> CardsScreen(back) { open(Screen.INSTRUCTION) }
                     Screen.EVENTS.name -> EventsScreen(back)
                     Screen.GESTURES.name -> GesturesScreen(back)
@@ -197,21 +230,24 @@ private fun AppRoot() {
                     Screen.COLORS.name -> ColorsScreen(back)
                     Screen.INSTRUCTION.name -> InstructionScreen(back)
                     Screen.ABOUT.name -> IdeaScreen(back)
+                    Screen.SUPPORT.name -> SupportScreen(back)
                     Screen.DIAG.name -> DiagScreen(back)
                     Screen.PAYDIAG.name -> PayDiagScreen(back)
                     Screen.KEEPALIVE.name -> KeepAliveScreen(back)
+                    Screen.LAUNCHER.name -> LauncherScreen(back)
                     Screen.BANKS.name -> BanksScreen(back)
                     Screen.LOOK.name -> LookScreen(back)
+                    Screen.STYLE.name -> StyleScreen(back)
                     Screen.ANIM.name -> AnimScreen(back)
                     Screen.EFFECTS.name -> EffectsScreen(back)
                     Screen.BANNERS.name -> BannersScreen(back)
                     Screen.PERMISSIONS.name -> PermissionsScreen(back, open)
                     Screen.TESTS.name -> TestsScreen(back)
-                    Screen.NOTIFICATIONS.name -> NotificationsScreen(back)
+                    Screen.NOTIFICATIONS.name -> NotificationsScreen(back, open)
+                    Screen.NOTIF_APPS.name -> NotifAppsScreen(back)
+                    Screen.NOTIF_DIAG.name -> NotifDiagScreen(back)
+                    Screen.FONT.name -> FontScreen(back)
                     Screen.BEHAVIOR.name -> BehaviorScreen(back)
-                    Screen.STYLE.name -> StyleScreen(back, open)
-                    Screen.APPS.name -> AppFilterScreen(back)
-                    Screen.FEATURE_STYLES.name -> FeatureStylesScreen(back)
                 }
             }
 
@@ -359,7 +395,7 @@ private fun BottomBar(selected: Int, onSelect: (Int) -> Unit) {
     }
 }
 
-/** Pil kaca: isi tipis ber-aksen, tepi terang di sudut atas, kilau di bagian atas, dan cahaya saat ditekan. */
+/** Pil kaca putih: isi putih tipis, tepi terang, kilau di atas, dan cahaya putih lembut saat ditekan. */
 @Composable
 private fun GlassPill(press: Float, modifier: Modifier) {
     val shape = RoundedCornerShape(26.dp)
@@ -369,7 +405,7 @@ private fun GlassPill(press: Float, modifier: Modifier) {
                 val g = 9.dp.toPx() * press
                 if (g > 0.5f) {
                     drawRoundRect(
-                        Ui.Primary.copy(alpha = 0.16f * press),
+                        GColor.White.copy(alpha = 0.13f * press),
                         topLeft = Offset(-g, -g),
                         size = Size(size.width + 2 * g, size.height + 2 * g),
                         cornerRadius = CornerRadius(26.dp.toPx() + g),
@@ -379,19 +415,19 @@ private fun GlassPill(press: Float, modifier: Modifier) {
             .clip(shape)
             .background(
                 Brush.verticalGradient(
-                    listOf(Ui.Primary.copy(alpha = 0.22f + 0.10f * press), Ui.Primary.copy(alpha = 0.07f + 0.06f * press)),
+                    listOf(GColor.White.copy(alpha = 0.26f + 0.10f * press), GColor.White.copy(alpha = 0.09f + 0.06f * press)),
                 ),
             )
             .border(
                 1.dp,
-                Brush.linearGradient(listOf(GColor.White.copy(alpha = 0.55f), GColor.White.copy(alpha = 0.08f), GColor.White.copy(alpha = 0.30f))),
+                Brush.linearGradient(listOf(GColor.White.copy(alpha = 0.75f), GColor.White.copy(alpha = 0.10f), GColor.White.copy(alpha = 0.40f))),
                 shape,
             )
             .drawBehind {
-                // Kilau spekuler di bagian atas pil
+                // Kilau spekuler di bagian atas pil, seperti pantulan cahaya di permukaan kaca
                 drawOval(
                     Brush.radialGradient(
-                        listOf(GColor.White.copy(alpha = 0.26f + 0.18f * press), GColor.Transparent),
+                        listOf(GColor.White.copy(alpha = 0.42f + 0.18f * press), GColor.Transparent),
                         center = Offset(size.width * 0.32f, size.height * 0.14f),
                         radius = size.width * 0.5f,
                     ),

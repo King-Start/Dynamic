@@ -1,7 +1,8 @@
 package com.style.island.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,8 +52,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -85,12 +84,13 @@ fun Page(
     onBack: (() -> Unit)? = null,
     subtitle: String? = null,
     action: (@Composable () -> Unit)? = null,
+    preview: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val scroll = rememberScrollState()
     Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+        Modifier.fillMaxSize()
+            .then(if (preview == null) Modifier.verticalScroll(scroll) else Modifier)
             .padding(horizontal = 16.dp),
     ) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
@@ -103,7 +103,7 @@ fun Page(
                 ) {
                     Icon(Icons.AutoMirrored.Rounded.ArrowBack, tr("Назад", "Back"), tint = Ui.Text)
                 }
-                Spacer(Modifier.width(14.dp))
+                Spacer(Modifier.width(18.dp))
             } else {
                 Spacer(Modifier.width(4.dp))
             }
@@ -124,16 +124,26 @@ fun Page(
         if (subtitle != null) {
             Text(
                 subtitle,
-                color = Ui.Sub,
-                fontSize = 13.sp,
+                color = Ui.Sub.copy(alpha = 0.6f),
+                fontSize = 14.sp,
                 modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
-                textAlign = TextAlign.Start,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         }
-        Spacer(Modifier.height(16.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
-        Spacer(Modifier.height(130.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        Spacer(Modifier.height(18.dp))
+        if (preview != null) {
+            preview()
+            Spacer(Modifier.height(12.dp))
+            Column(Modifier.weight(1f).verticalScroll(scroll), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                content()
+                Spacer(Modifier.height(130.dp))
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
+            Spacer(Modifier.height(130.dp))
+            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        }
     }
 }
 
@@ -154,12 +164,8 @@ fun PillAction(text: String, onClick: () -> Unit) {
 fun SectionHeader(text: String, trailing: (@Composable () -> Unit)? = null) {
     Row(Modifier.fillMaxWidth().padding(start = 6.dp, top = 14.dp, end = 4.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text.uppercase(),
-            color = Ui.Sub,
-            fontSize = 12.sp,
-            letterSpacing = 0.9.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(1f),
+            text.uppercase(), color = Ui.Sub, fontSize = 12.sp, letterSpacing = 0.9.sp,
+            fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f),
         )
         trailing?.invoke()
     }
@@ -276,6 +282,33 @@ fun GroupItem(
     }
 }
 
+/** Строка списка со своим значком слева (например, значком приложения) вместо векторного. */
+@Composable
+fun GroupRow(
+    pos: Pos,
+    title: String,
+    subtitle: String?,
+    onClick: () -> Unit,
+    leading: @Composable () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(pos.shape())
+            .background(Ui.Card)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        leading()
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 20.sp)
+            if (subtitle != null) Text(subtitle, color = Ui.Sub, fontSize = 13.5.sp, lineHeight = 18.sp)
+        }
+    }
+}
+
 @Composable
 fun GroupToggle(
     pos: Pos,
@@ -308,7 +341,7 @@ fun Badge(text: String, modifier: Modifier = Modifier, color: Color = Tile.Orang
 @Composable
 fun IconAction(icon: ImageVector, description: String, onClick: () -> Unit) {
     Box(
-        Modifier.size(42.dp).clip(CircleShape).background(Ui.Card).border(1.dp, Ui.Hairline, CircleShape).clickable(onClick = onClick),
+        Modifier.size(48.dp).clip(CircleShape).background(Ui.Card).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, description, tint = Ui.Text)
@@ -332,14 +365,13 @@ fun GroupSlider(
             .fillMaxWidth()
             .clip(pos.shape())
             .background(Ui.Card)
-            .border(1.dp, Ui.Hairline, pos.shape())
-            .padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 6.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ItemIcon(icon, color)
             Spacer(Modifier.width(14.dp))
-            Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            Text(label, color = Ui.Sub, fontSize = 14.sp)
+            Text(title, color = Ui.Text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Text(label, color = Ui.Sub, fontSize = 15.sp)
         }
         Slider(
             value = value,
@@ -375,13 +407,12 @@ fun GroupStepSlider(
             .fillMaxWidth()
             .clip(pos.shape())
             .background(Ui.Card)
-            .border(1.dp, Ui.Hairline, pos.shape())
-            .padding(start = 16.dp, end = 12.dp, top = 14.dp, bottom = 8.dp),
+            .padding(start = 20.dp, end = 14.dp, top = 16.dp, bottom = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ItemIcon(icon, color)
             Spacer(Modifier.width(14.dp))
-            Text(title, color = Ui.Text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Text(title, color = Ui.Text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
             if (action != null) {
                 Text(
                     action.first, color = Ui.Primary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold,

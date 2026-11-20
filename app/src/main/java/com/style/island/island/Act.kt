@@ -1,6 +1,7 @@
 package com.style.island.island
 
 import com.style.island.core.AlarmInfo
+import com.style.island.core.InboxItem
 import com.style.island.core.BatteryInfo
 import com.style.island.core.CallInfo
 import com.style.island.core.ChronoInfo
@@ -18,6 +19,8 @@ sealed class Act(val id: String, val transient: Boolean = false) {
     open val pkg: String? get() = null
 
     data object Idle : Act("idle")
+    data class HotspotA(val status: com.style.island.service.HotspotStatus) : Act("hotspot")
+    data class WeatherA(val weather: com.style.island.service.WeatherInfo) : Act("weather")
     data class NoticeA(val n: Notice) : Act("notice", transient = true)
     data class TimerA(val t: TimerState) : Act("timer")
     data class StopwatchA(val w: StopwatchState) : Act("stopwatch")
@@ -45,4 +48,6 @@ sealed class Act(val id: String, val transient: Boolean = false) {
     data class AlarmA(val a: AlarmInfo) : Act("alarm") {
         override val pkg: String? get() = a.pkg
     }
+    /** «История уведомлений»: прочитать позже — значки приложений в капсуле, список при раскрытии */
+    data class InboxA(val items: List<InboxItem>) : Act("inbox")
 }

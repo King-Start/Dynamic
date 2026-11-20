@@ -6,18 +6,68 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 
 > Since 1.6.1 the app and the island speak English (Features → General → Language). Earlier versions were in Russian only, so older entries give the Russian label in brackets.
 
-## [1.7.0] — 2026-11-17
+## [1.8.0] — 2026-11-20
 
-- Eight notification designs with genuinely different forms: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner (accent stripe), Split (accent block with the icon), Headline (pure typography) and Badge (tiny capsule). Replies and action buttons work in every design. Pick one from the live gallery in Appearance → Notification design.
-- Ready-made themes (Classic, Studio, Ticker, Chat, Editorial, Banner, Split, Mini): one tap sets style, content layout and notification design together. New installs start with Studio-like defaults (Ring layout, Card notifications).
-- Five new content layouts besides Classic: Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls, flashlight, downloads and charging, and to the incoming-call card. Pick one in Appearance → Layout, or per feature.
-- Three new island styles: Aurora, Sunset and Frost.
-- All island icons redrawn as one consistent rounded line set.
-- New app icon and Home tab icon.
-- HyperIsland, Neon, Gradient and iPhone styles now apply to every feature; the per-feature style no longer forces the original look.
-- Fixed a build error (missing accent-colour helper) and the extra card drawn inside notifications on non-default styles.
-- App theme redesigned: neutral dark palette with a single teal accent, tinted icon tiles, flatter cards with hairline borders, simpler switches. The bottom bar selector is now a liquid-glass pill that follows your finger when pressed and dragged, stretches with motion and magnifies the icons under it.
-- Repository cleanup: new README, build workflow no longer tied to a fixed signing certificate.
+### New features
+- Eight notification designs with genuinely different forms: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner (accent stripe), Split (accent block with the icon), Headline (pure typography) and Badge (tiny capsule). Replies and action buttons work in every design. Pick one from the live gallery in Appearance → Theme and layout.
+- Five content layouts besides Classic: Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls, flashlight, downloads and charging, and to the incoming-call card.
+- Ready-made themes (Classic, Studio, Ticker, Chat, Editorial, Banner, Split, Mini) set the style, layout and notification design together.
+- Three new island styles besides Standard: Neon, Gradient, iPhone, Aurora, Sunset and Frost. They follow the activity accent colour and work with the border settings.
+- App theme redesigned: neutral dark palette with one teal accent, tinted icon tiles, flatter cards with hairline borders, simpler switches. The tab selector is now a white liquid-glass pill that follows your finger when pressed and dragged.
+- All island icons redrawn as one consistent rounded line set; new app icon.
+
+### Housekeeping
+- Based on upstream 1.7.2 (Liquid Glass, pinned apps, Brief, weather, lyrics, custom fonts and more). The update checker now looks at this repository's releases.
+
+## [1.7.2] — 2026-11-15
+
+### 🛠 Fixes
+- In-app updates download the APK again: after the repository was renamed, GitHub returns file links with the new owner name, and the address check rejected them. The version and its notes appeared, but the download never started.
+
+## [1.7.1] — 2026-11-15
+
+### 🛠 Fixes
+- Dismiss app notifications right from the island: swiping up on the banner also clears it from the shade, the expanded card can be swiped down or closed with the ✕ button, and tapping outside collapses it.
+- The expanded island (music player and other cards) collapses on swipe up again.
+
+## [1.7.0] — 2026-11-15
+
+### ✨ New features
+- 🫧 **Liquid Glass**: refined highlights and transparency, glass density and system blur strength controls. Available for the island, expanded cards and secondary activity on supported devices.
+- 📌 **Pinned apps and contacts**: a compact shortcut row below the date.
+- 🕒 **Brief**: separate compact clock, steps and weather pages, clock styles and extra controls.
+- 🌤 **Weather**: city selection, a standalone card or Brief page, manual refresh and retries after errors.
+- 🎵 **Lyrics**: a continuous soft highlighting wave and smooth line transitions; unsynced lyrics remain scrollable.
+- 🎨 **Custom colors and fonts**: text color, HEX/HSV picker, system or custom fonts, weight and element sizing.
+- 📶 **Hotspot**: persistent state, a settings shortcut and client counts when reliable system information is available.
+- ⬇️ **Transfer speed in expanded download cards**: app-provided details or optional approximate total network rates ↓/↑, preserving actual download percentages.
+- 🔓 **Face ID · face only**: optional verified face-unlock animation using separately configured Shizuku. PIN and fingerprint unlock are not presented as Face ID.
+- ⏰ **Create alarms**, auto-hide the idle island, scroll to top in supported apps and keep cards open on outside touch.
+- 🔋 **Battery**: an icon filled according to the current charge and optional approximate charging-time estimates.
+- 🔔 **Notifications**: history, display styles, duration, silent messages, per-app rules and missing-notification diagnostics.
+- 🌍 **Languages**: Indonesian, Portuguese, Kazakh, French and Spanish; improved language switching.
+- 💜 **Support the developer**: Telegram and Boosty in About, with English and Russian text.
+
+- 🙏 Thanks to **@uswer1106** for helping improve the app.
+
+### 🛠 Fixes and optimization
+- Distinct voice, screen and camera recording states; improved Google Recorder detection, pause/resume and real source controls.
+- Improved lyrics search, cache, Enhanced LRC handling, track changes and media sessions. MediaStyle alone no longer classifies music as a download.
+- Improved consecutive messages, replies, mark-as-read actions and action wrapping.
+- Pending alarms use the secondary activity; improved false-alarm filtering and timer layout on narrow cards.
+- Preserved detected payment amounts and improved recognition of brief success screens; individual bank apps still require device testing.
+- Refined animations, notch-mode blur geometry, shortcut placement and landscape color-picker accessibility.
+- Reduced polling, redundant subscriptions and hidden-effect work; removed confirmed unused code.
+- Hardened download URLs, response limits, APK/certificate checks and partial-download cleanup.
+- **296 unit tests passed** on functional commit `1863d0b`; this does not replace testing every phone.
+
+### Compatibility
+System blur depends on Android and firmware. Face ID requires Shizuku and reliable face events. Hotspot, recording and Bluetooth data depend on the source. TrafficStats reports approximate total network speed, not an exact per-file rate.
+
+### Updating
+The package remains `com.style.island`. APKs for 1.6.1, 1.6.2, 1.6.5 and the verified test 1.7.0 use compatible signing certificates; versionCode is now 14. Android's standard installer asks for confirmation. Previous upgrade tests preserved data, but Android 15 restricted Accessibility again: you may need to manually allow restricted settings and re-enable the service. The complete final-APK upgrade flow on a physical device has not yet been verified.
+
+Full list in Russian: [CHANGELOG-1.7.0-FULL.md](docs/CHANGELOG-1.7.0-FULL.md).
 
 ## [1.6.5] — 2026-10-28
 

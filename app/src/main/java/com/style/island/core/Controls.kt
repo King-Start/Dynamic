@@ -1,9 +1,14 @@
 package com.style.island.core
 
+import com.style.island.service.CallMonitor
+import com.style.island.data.LauncherVisibility
+
 import android.app.ActivityOptions
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
 import android.telecom.TelecomManager
@@ -109,7 +114,8 @@ object Controls {
     // Прочее
 
     fun openApp(context: Context, pkg: String) {
-        val intent = context.packageManager.getLaunchIntentForPackage(pkg) ?: return
+        val intent = if (pkg == context.packageName) LauncherVisibility.settingsIntent(context)
+            else context.packageManager.getLaunchIntentForPackage(pkg) ?: return
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
         runCatching { context.startActivity(intent) }
         collapse()
@@ -152,6 +158,11 @@ object Controls {
             return
         }
         if (send(context, call.answer)) return
+        // A VoIP notification must never answer an unrelated cellular call.
+        if (call.key != CallMonitor.KEY && call.pkg != runCatching { context.getSystemService(TelecomManager::class.java)?.defaultDialerPackage }.getOrNull()) {
+            if (!send(context, call.open)) openApp(context, call.pkg)
+            return
+        }
         val ok = runCatching { context.getSystemService(TelecomManager::class.java)!!.acceptRingingCall() }.isSuccess
         if (!ok) showCallScreen(context, call)
     }
@@ -164,6 +175,10 @@ object Controls {
             return
         }
         if (send(context, if (call.incoming) call.decline else call.hangUp)) return
+        if (call.key != CallMonitor.KEY && call.pkg != runCatching { context.getSystemService(TelecomManager::class.java)?.defaultDialerPackage }.getOrNull()) {
+            if (!send(context, call.open)) openApp(context, call.pkg)
+            return
+        }
         val ok = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
             runCatching { context.getSystemService(TelecomManager::class.java)!!.endCall() }.getOrDefault(false)
         if (!ok) showCallScreen(context, call)
@@ -192,40 +207,58 @@ object Controls {
         IslandBus.commands.tryEmit(ServiceCommand.SCREENSHOT)
     }
 
+    /** Only a configured, explicit island gesture requests scrolling in the current app. */
+    fun scrollToTop() {
+        IslandBus.commands.tryEmit(ServiceCommand.SCROLL_TOP)
+    }
+
     fun lockScreen() {
         IslandBus.commands.tryEmit(ServiceCommand.LOCK)
-    }
-
-    /** Переключить Wi-Fi. Android 10+ не разрешает менять его программно, поэтому открываем панель быстрых настроек. */
-    fun toggleWifi(context: Context) {
-        runCatching {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Программно нельзя — открываем шторку быстрых настроек
-                context.startActivity(Intent(Settings.Panel.ACTION_WIFI).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            } else {
-                val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
-                @Suppress("DEPRECATION")
-                wm.setWifiEnabled(!wm.isWifiEnabled)
-            }
-        }
-    }
-
-    /** Переключить Bluetooth. Android 13+ требует разрешения, поэтому просто открываем настройки Bluetooth. */
-    fun toggleBluetooth(context: Context) {
-        runCatching {
-            val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter() ?: return
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            } else {
-                @Suppress("DEPRECATION")
-                if (adapter.isEnabled) adapter.disable() else adapter.enable()
-            }
-        }
     }
 
     /** Выключить службу острова, например на время банковского приложения. Включить её снова можно только в настройках */
     fun turnOffIsland() {
         IslandBus.commands.tryEmit(ServiceCommand.TURN_OFF)
+    }
+
+    /**
+     * Кнопка «Режим звука»: звонок → вибрация → без звука → звонок. «Без звука» Android разрешает только
+     * с доступом к «Не беспокоить» — без него кнопка переключает звонок и вибрацию и открывает этот доступ.
+     */
+    fun cycleRinger(context: Context) {
+        val audio = context.getSystemService(AudioManager::class.java) ?: return
+        val next = when (audio.ringerMode) {
+            AudioManager.RINGER_MODE_NORMAL -> AudioManager.RINGER_MODE_VIBRATE
+            AudioManager.RINGER_MODE_VIBRATE -> AudioManager.RINGER_MODE_SILENT
+            else -> AudioManager.RINGER_MODE_NORMAL
+        }
+        val ok = runCatching { audio.ringerMode = next }.isSuccess
+        if (!ok) {
+            runCatching { audio.ringerMode = AudioManager.RINGER_MODE_NORMAL }
+            openPolicyAccess(context)
+        }
+        IslandBus.ringer.value = audio.ringerMode
+    }
+
+    /** Кнопка «Не беспокоить»: включить или выключить. Без доступа открывает экран, где его дают. */
+    fun toggleDnd(context: Context) {
+        val nm = context.getSystemService(NotificationManager::class.java) ?: return
+        if (!nm.isNotificationPolicyAccessGranted) {
+            openPolicyAccess(context)
+            return
+        }
+        val on = nm.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+        runCatching {
+            nm.setInterruptionFilter(if (on) NotificationManager.INTERRUPTION_FILTER_ALL else NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+        }
+        IslandBus.dnd.value = nm.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+    }
+
+    private fun openPolicyAccess(context: Context) {
+        collapse()
+        runCatching {
+            context.startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
     }
 
     fun openCamera(context: Context) {
@@ -239,6 +272,10 @@ object Controls {
         if (call.key == TEST_CALL) return
         if (send(context, call.open)) return
         val telecom = context.getSystemService(TelecomManager::class.java)
+        if (call.key != CallMonitor.KEY && call.pkg != runCatching { telecom?.defaultDialerPackage }.getOrNull()) {
+            if (call.pkg.isNotEmpty()) openApp(context, call.pkg)
+            return
+        }
         if (runCatching { telecom?.showInCallScreen(false) }.isSuccess && telecom != null) return
         if (call.pkg.isNotEmpty()) openApp(context, call.pkg)
     }

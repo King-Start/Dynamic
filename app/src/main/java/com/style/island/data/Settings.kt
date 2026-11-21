@@ -106,6 +106,7 @@ enum class BubbleSide(private val ru: String, private val en: String) {
 @Serializable
 enum class IslandStyle(private val ru: String, private val en: String) {
     AKIRA("Стандарт", "Standard"),
+    HYPERISLAND("HyperIsland", "HyperIsland"),
     NEON("Неон", "Neon"),
     GRADIENT("Градиент", "Gradient"),
     IPHONE("iPhone", "iPhone"),
@@ -158,7 +159,7 @@ enum class IslandPreset(
     CHAT("Чат", "Chat", IslandStyle.FROST, IslandLayout.LABEL, NoticeDesign.CHAT),
     EDITORIAL("Редакция", "Editorial", IslandStyle.AKIRA, IslandLayout.STACK, NoticeDesign.HEADLINE),
     BANNER("Баннер", "Banner", IslandStyle.AURORA, IslandLayout.LABEL, NoticeDesign.BANNER),
-    SPLIT("Разделённая", "Split", IslandStyle.GRADIENT, IslandLayout.RING, NoticeDesign.SPLIT),
+    SPLIT("Разделённая", "Split", IslandStyle.HYPERISLAND, IslandLayout.RING, NoticeDesign.SPLIT),
     MINI("Мини", "Mini", IslandStyle.AKIRA, IslandLayout.MINI, NoticeDesign.BADGE),
     ;
 

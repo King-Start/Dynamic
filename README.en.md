@@ -29,7 +29,7 @@ App notification cards come in eight genuinely different forms, not just effects
 
 Besides the notification design, the island content has six layouts: Classic, Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls (including the incoming-call card), flashlight, downloads and charging.
 
-Island styles: Standard (follows the Color and border settings, with Liquid Glass), Neon, Gradient, iPhone, Aurora, Sunset and Frost.
+Island styles: Standard (follows the Color and border settings, with Liquid Glass), HyperIsland, Neon, Gradient, iPhone, Aurora, Sunset and Frost.
 
 ## Install
 

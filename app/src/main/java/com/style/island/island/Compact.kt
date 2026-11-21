@@ -1300,6 +1300,24 @@ private fun rememberFace(act: Act, s: IslandSettings): Face? = when (act) {
             { Icon(Ios.download, null, tint = Tints.Blue, modifier = Modifier.size(it)) }
         } else null,
     )
+    is Act.HotspotA -> Face(
+        Tints.Blue, tr("Точка доступа", "Hotspot"), act.status.clients?.toString() ?: tr("Вкл", "On"), null,
+        icon = { Icon(Icons.Rounded.WifiTethering, null, tint = Tints.Blue, modifier = Modifier.size(it)) },
+    )
+    is Act.WeatherA -> Face(
+        Tints.Yellow, tr("Погода", "Weather"), "${act.weather.temperature.toInt()}°", null,
+        icon = { Icon(Icons.Rounded.WbSunny, null, tint = Tints.Yellow, modifier = Modifier.size(it)) },
+    )
+    is Act.LiveA -> {
+        val tint = liveTint(act.l.kind)
+        Face(
+            tint, act.l.title, liveShort(act.l), null,
+            icon = { LiveGlyph(act.l, it * 1.1f, tint) },
+            trailing = if (liveShort(act.l) == null) {
+                { GlowDot(tint, it * 0.5f, !s.reduceEffects) }
+            } else null,
+        )
+    }
     is Act.ChargingA -> Face(
         Tints.Green, tr("Зарядка", "Charging"), "${act.b.level}%", act.b.level / 100f,
         icon = { Icon(Ios.flash, null, tint = Tints.Green, modifier = Modifier.size(it)) },

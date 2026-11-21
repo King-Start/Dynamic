@@ -104,6 +104,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.style.island.core.BatteryInfo
+import com.style.island.core.CallInfo
 import com.style.island.core.ChronoInfo
 import com.style.island.core.Controls
 import com.style.island.core.IslandBus
@@ -275,6 +276,8 @@ fun IslandOverlay(
         if (s.cardLive) liveActive.maxByOrNull { it.postTime }?.let { persistent += Act.LiveA(it) }
         stopwatch?.let { persistent += Act.StopwatchA(it) }
         chronoActive.filter { if (it.recording) s.cardRecording else s.cardTimer }
+            // Satu telepon bisa punya dua notifikasi (aplikasi telepon dan sistem); yang kedua tidak ditampilkan sebagai pencacah
+            .filterNot { c -> call != null && isDuplicateOfCall(c, call) }
             .maxByOrNull { it.postTime }?.let { persistent += Act.ChronoA(it) }
         val m = media
         if (s.cardMedia && m != null && !(s.hideWhenPlayerOpen && foreground == m.pkg)) {
@@ -1000,6 +1003,29 @@ private fun Act.surfaceAccent(): Color? = when (this) {
     else -> null
 }
 
+/**
+ * Pencacah yang sebenarnya telepon yang sama: naik (bukan hitung mundur), bukan rekaman, dan sepaket, bernama sama,
+ * atau mulai hampir bersamaan dengan panggilan aktif. Tanpa ini telepon tampil dua kali (kapsul dan lingkaran kecil).
+ */
+private fun isDuplicateOfCall(c: ChronoInfo, call: CallInfo): Boolean =
+    !call.incoming && !c.recording && !c.countDown && (
+        c.pkg == call.pkg ||
+            kotlin.math.abs(c.base - call.base) < 15_000L ||
+            (call.name.isNotBlank() && c.title.contains(call.name, ignoreCase = true))
+        )
+
+/** Warna aksen lingkaran kecil untuk satu aktivitas, atau null bila tak punya (musik memakai sampul). */
+private fun bubbleAccent(act: Act): Color? = when (act) {
+    is Act.CallA, is Act.ChargingA -> Tints.Green
+    is Act.TimerA, is Act.StopwatchA -> Tints.Orange
+    is Act.ChronoA -> if (act.c.recording) Tints.Red else Tints.Orange
+    is Act.TorchA, is Act.WeatherA -> Tints.Yellow
+    is Act.ProgressA, is Act.HotspotA -> Tints.Blue
+    is Act.AlarmA -> AlarmTint
+    is Act.LiveA -> liveTint(act.l.kind)
+    else -> null
+}
+
 @Composable
 private fun Bubble(act: Act, s: IslandSettings) {
     IslandTextTheme(s) { BubbleContent(act, s) }
@@ -1023,6 +1049,18 @@ private fun BubbleContent(act: Act, s: IslandSettings) {
         contentAlignment = Alignment.Center,
     ) {
         val inner: Dp = h * 0.62f
+        // Lingkaran kecil ikut tata letak yang dipilih: Cincin = cincin aksen, lainnya = latar aksen tipis
+        val ringAccent = bubbleAccent(act)
+        if (ringAccent != null && s.layout != com.style.island.data.IslandLayout.CLASSIC) {
+            androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                val sw = 2.dp.toPx()
+                if (s.layout == com.style.island.data.IslandLayout.RING) {
+                    drawCircle(ringAccent.copy(alpha = 0.6f), radius = size.minDimension / 2 - sw, style = androidx.compose.ui.graphics.drawscope.Stroke(sw))
+                } else {
+                    drawCircle(ringAccent.copy(alpha = 0.16f), radius = size.minDimension / 2 - sw)
+                }
+            }
+        }
         when (act) {
             is Act.MediaA -> Art(act.m.art, h * 0.72f, h / 2)
             is Act.TimerA -> {

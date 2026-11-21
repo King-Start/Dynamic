@@ -14,7 +14,13 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 - Ready-made themes (Classic, Studio, Ticker, Chat, Editorial, Banner, Split, Mini) set the style, layout and notification design together.
 - Three new island styles besides Standard: Neon, Gradient, iPhone, Aurora, Sunset and Frost. They follow the activity accent colour and work with the border settings.
 - App theme redesigned: neutral dark palette with one teal accent, tinted icon tiles, flatter cards with hairline borders, simpler switches. The tab selector is now a white liquid-glass pill that follows your finger when pressed and dragged.
+- The small circle beside the capsule follows the chosen layout (accent ring or tinted disc).
+- Layouts also cover hotspot, weather and navigation/ride activities.
+- HyperIsland style is available again.
 - All island icons redrawn as one consistent rounded line set; new app icon.
+
+### Fixes
+- A phone call no longer shows twice (capsule plus a second counter) when the dialer and the system post two notifications for the same call.
 
 ### Housekeeping
 - Based on upstream 1.7.2 (Liquid Glass, pinned apps, Brief, weather, lyrics, custom fonts and more). The update checker now looks at this repository's releases.

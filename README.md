@@ -29,7 +29,7 @@ Kartu notifikasi aplikasi punya delapan desain dengan bentuk yang berbeda, bukan
 
 Selain desain notifikasi, isi island punya enam tata letak: Klasik, Cincin, Berlabel, Dua baris, Garis progres, dan Mungil. Berlaku untuk musik, timer, stopwatch, jam, panggilan (termasuk kartu panggilan masuk), senter, unduhan, dan pengisian.
 
-Gaya island: Standar (mengikuti pengaturan Warna dan bingkai, dengan Liquid Glass), Neon, Gradien, iPhone, Aurora, Senja, dan Es Kristal.
+Gaya island: Standar (mengikuti pengaturan Warna dan bingkai, dengan Liquid Glass), HyperIsland, Neon, Gradien, iPhone, Aurora, Senja, dan Es Kristal.
 
 ## Instalasi
 

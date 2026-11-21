@@ -55,6 +55,7 @@ private fun searchCatalog(): List<SearchItem> {
     return listOf(
         SearchItem(tr("Положение и размер", "Position and size"), appearance, Screen.SIZE, "камера вырез капля отступ сверху смещение notch camera ширина высота top offset position width height"),
         SearchItem(tr("Размер и форма", "Size and shape"), appearance, Screen.LOOK, "радиус скругление углы карточка текст icons radius rounded corners card scale"),
+        SearchItem(tr("Тема и раскладка", "Theme and layout"), appearance, Screen.STYLE, "тема раскладка вид уведомлений карточка бегущая строка чат баннер значок заголовок стиль неон градиент аврора закат иней hyperisland theme layout notification design style card ticker chat banner split badge headline ring labeled mini neon gradient aurora sunset frost tema tata letak desain notifikasi gaya"),
         SearchItem(tr("Цвет и рамка", "Color and border"), appearance, Screen.COLORS, "заливка контур стороны прозрачность тень градиент fill outline opacity shadow gradient"),
         SearchItem(tr("Цвет текста", "Text color"), appearance, Screen.COLORS, "цвет шрифт текст капсула карточка сводка font text color capsule card brief"),
         SearchItem("Liquid Glass", appearance, Screen.COLORS, "стекло плотность блики прозрачность glass reflections density material"),

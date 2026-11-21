@@ -1136,15 +1136,6 @@ fun DrawScope.drawIslandRect(
 fun islandShape(corner: Dp, s: IslandSettings): RoundedCornerShape =
     if (s.notch) RoundedCornerShape(s.notchTopRadius.dp, s.notchTopRadius.dp, corner, corner) else RoundedCornerShape(corner)
 
-fun islandShape(corner: Dp, notch: Boolean): RoundedCornerShape =
-    if (notch) RoundedCornerShape(0.dp, 0.dp, corner, corner) else RoundedCornerShape(corner)
-
-/** Форма острова со скруглением из анимации: рамка и стекло читают его при рисовании и обновляются без пересборки. */
-private class AnimatedIslandShape(private val corner: State<Dp>, private val notch: Boolean, private val topRadius: Int) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline =
-        (if (notch) RoundedCornerShape(topRadius.dp, topRadius.dp, corner.value, corner.value) else RoundedCornerShape(corner.value))
-            .createOutline(size, layoutDirection, density)
-}
 
 /** Заливка острова: цвет из «Цвета капсулы» с непрозрачностью из «Оформления». */
 fun islandFill(s: IslandSettings): Color = Color(s.color).let { it.copy(alpha = it.alpha * s.islandOpacity.coerceIn(10, 100) / 100f) }

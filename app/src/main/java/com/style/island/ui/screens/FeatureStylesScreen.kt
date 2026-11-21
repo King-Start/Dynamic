@@ -52,6 +52,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+// PERBAIKAN: Import yang hilang ditambahkan di sini
 import com.style.island.core.tr
 import com.style.island.data.FeatureAnim
 import com.style.island.data.IslandLayout
@@ -66,43 +68,38 @@ import com.style.island.ui.SectionHeader
 import com.style.island.ui.Tile
 import com.style.island.ui.Ui
 
-/** Палитра акцентных цветов для фич (ARGB). */
 private val featureColors = listOf(
     0xFF34C759, 0xFF0A84FF, 0xFFFF9F0A, 0xFFFF453A, 0xFFBF5AF2, 0xFFFF2D92,
     0xFF64D2FF, 0xFF30D158, 0xFFFFD60A, 0xFF5E5CE6, 0xFFFF375F, 0xFF8E8E93,
 )
 
-/**
- * Экран: для каждого типа активности (фичи) — свой стиль, своя анимация и свой цвет.
- * Нажатие на фичу открывает окно с тремя разделами.
- */
 @Composable
 fun FeatureStylesScreen(onBack: () -> Unit) {
     val s by SettingsRepo.state.collectAsState()
     var editKey by remember { mutableStateOf<String?>(null) }
 
+    // PERBAIKAN: tr() hanya pakai 2 argumen
     val features = listOf(
-        FeatureInfo("media", tr("Музыка", "Music", "Musik"), Icons.Rounded.LibraryMusic, Tile.Purple),
-        FeatureInfo("timer", tr("Таймер", "Timer", "Timer"), Icons.Rounded.Timer, Tile.Orange),
-        FeatureInfo("stopwatch", tr("Секундомер", "Stopwatch", "Stopwatch"), Icons.Rounded.HourglassEmpty, Tile.Orange),
-        FeatureInfo("torch", tr("Фонарик", "Flashlight", "Senter"), Icons.Rounded.FlashlightOn, Tile.Yellow),
-        FeatureInfo("charging", tr("Зарядка", "Charging", "Pengisian"), Icons.Rounded.BatteryChargingFull, Tile.Green),
-        FeatureInfo("notice", tr("Уведомления", "Notifications", "Notifikasi"), Icons.Rounded.Notifications, Tile.Blue),
-        FeatureInfo("call", tr("Звонки", "Calls", "Panggilan"), Icons.Rounded.Call, Tile.Green),
-        FeatureInfo("alarm", tr("Будильник", "Alarm", "Alarm"), Icons.Rounded.Lock, Tile.Red),
-        FeatureInfo("chrono", tr("Таймеры Часов", "Clock timers", "Timer Jam"), Icons.Rounded.MonitorHeart, Tile.Indigo),
-        FeatureInfo("progress", tr("Прогресс", "Progress", "Progres"), Icons.Rounded.SwapVert, Tile.Pink),
-        FeatureInfo("live", tr("Live активности", "Live activities", "Aktivitas Live"), Icons.Rounded.Wifi, Tile.Teal),
-        FeatureInfo("pay", tr("Оплата", "Payment", "Pembayaran"), Icons.Rounded.PowerSettingsNew, Tile.Purple),
+        FeatureInfo("media", tr("Музыка", "Music"), Icons.Rounded.LibraryMusic, Tile.Purple),
+        FeatureInfo("timer", tr("Таймер", "Timer"), Icons.Rounded.Timer, Tile.Orange),
+        FeatureInfo("stopwatch", tr("Секундомер", "Stopwatch"), Icons.Rounded.HourglassEmpty, Tile.Orange),
+        FeatureInfo("torch", tr("Фонарик", "Flashlight"), Icons.Rounded.FlashlightOn, Tile.Yellow),
+        FeatureInfo("charging", tr("Зарядка", "Charging"), Icons.Rounded.BatteryChargingFull, Tile.Green),
+        FeatureInfo("notice", tr("Уведомления", "Notifications"), Icons.Rounded.Notifications, Tile.Blue),
+        FeatureInfo("call", tr("Звонки", "Calls"), Icons.Rounded.Call, Tile.Green),
+        FeatureInfo("alarm", tr("Будильник", "Alarm"), Icons.Rounded.Lock, Tile.Red),
+        FeatureInfo("chrono", tr("Таймеры Часов", "Clock timers"), Icons.Rounded.MonitorHeart, Tile.Indigo),
+        FeatureInfo("progress", tr("Прогресс", "Progress"), Icons.Rounded.SwapVert, Tile.Pink),
+        FeatureInfo("live", tr("Live активности", "Live activities"), Icons.Rounded.Wifi, Tile.Teal),
+        FeatureInfo("pay", tr("Оплата", "Payment"), Icons.Rounded.PowerSettingsNew, Tile.Purple),
     )
 
-    Page(tr("Стиль по фичам", "Per-feature style", "Gaya per fitur"), onBack,
+    Page(tr("Стиль по фичам", "Per-feature style"), onBack,
         subtitle = tr(
             "У каждого события острова (звонок, зарядка, музыка…) теперь свой стиль, анимация и цвет. Нажмите на фичу.",
-            "Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature.",
-            "Setiap event island (panggilan, pengisian, musik…) kini punya gaya, animasi, dan warna sendiri. Tekan fitur.",
+            "Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature."
         )) {
-        SectionHeader(tr("Стиль, анимация и цвет", "Style, animation & color", "Gaya, animasi & warna"))
+        SectionHeader(tr("Стиль, анимация и цвет", "Style, animation & color"))
         Group {
             features.forEachIndexed { idx, f ->
                 val style = s.featureStyles[f.key] ?: s.style
@@ -145,7 +142,6 @@ fun FeatureStylesScreen(onBack: () -> Unit) {
     }
 }
 
-/** Окно настройки одной фичи: стиль + анимация + цвет. */
 @Composable
 private fun FeatureEditDialog(
     title: String,
@@ -167,30 +163,30 @@ private fun FeatureEditDialog(
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 // --- Стиль ---
-                Text(tr("Стиль", "Style", "Gaya"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
+                Text(tr("Стиль", "Style"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
                 IslandStyle.entries.forEach { st ->
                     RadioRow(st.title, st == style) { onStyle(st); onDismiss() }
                 }
                 // --- Tata letak ---
                 Spacer(Modifier.size(10.dp))
-                Text(tr("Раскладка", "Layout", "Tata letak"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
+                Text(tr("Раскладка", "Layout"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
                 IslandLayout.entries.forEach { l ->
                     RadioRow(l.title, l == layout) { onLayout(l); onDismiss() }
                 }
                 // --- Анимация ---
                 Spacer(Modifier.size(10.dp))
-                Text(tr("Анимация", "Animation", "Animasi"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
-                RadioRow(tr("По умолчанию", "Default", "Default"), anim == null) { onAnim(null) }
+                Text(tr("Анимация", "Animation"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
+                RadioRow(tr("По умолчанию", "Default"), anim == null) { onAnim(null) }
                 FeatureAnim.entries.forEach { a ->
                     RadioRow(a.title, a == anim) { onAnim(a); onDismiss() }
                 }
                 // --- Цвет ---
                 Spacer(Modifier.size(10.dp))
-                Text(tr("Цвет акцента", "Accent color", "Warna aksen"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
+                Text(tr("Цвет акцента", "Accent color"), color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(bottom = 4.dp))
                 ColorRow(featureColors, color, onPick = onColor, onDismiss = onDismiss)
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(tr("Готово", "Done", "Selesai"), color = Ui.Primary) } },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(tr("Готово", "Done"), color = Ui.Primary) } },
     )
 }
 
@@ -232,9 +228,8 @@ private fun ColorRow(colors: List<Long>, selected: Int?, onPick: (Int?) -> Unit,
                 )
             }
         }
-        // «Default» — сброс цвета фичи
         TextButton(onClick = { onPick(null); onDismiss() }) {
-            Text(tr("Цвет по умолчанию", "Default color", "Warna default"), color = Ui.Primary, fontSize = 13.sp)
+            Text(tr("Цвет по умолчанию", "Default color"), color = Ui.Primary, fontSize = 13.sp)
         }
     }
 }

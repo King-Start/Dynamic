@@ -50,10 +50,8 @@ import com.style.island.ui.SectionHeader
 import com.style.island.ui.Tile
 import androidx.compose.material.icons.rounded.Checklist
 
-/** Список пользовательских приложений для фильтра уведомлений острова. */
 private data class AppInfo(val pkg: String, val label: String)
 
-/** «Уведомления» → выбор приложений: какие приложения остров показывает, а какие игнорирует. */
 @Composable
 fun AppFilterScreen(onBack: () -> Unit) {
     val context = LocalContext.current
@@ -80,14 +78,15 @@ fun AppFilterScreen(onBack: () -> Unit) {
         it.label.contains(query, ignoreCase = true) || it.pkg.contains(query, ignoreCase = true)
     }
 
-    Page(tr("Выбор приложений", "App selection", "Pilihan aplikasi"), onBack,
-        subtitle = tr("Какие приложения показывают уведомления на острове. Пустой список — показывать все.", "Which apps show notifications on the island. An empty list shows all apps.", "Aplikasi mana yang menampilkan notifikasi di island. Daftar kosong berarti menampilkan semua.")) {
-        SectionHeader(tr("Режим", "Mode", "Mode"))
+    // PERBAIKAN: tr() hanya pakai 2 argumen
+    Page(tr("Выбор приложений", "App selection"), onBack,
+        subtitle = tr("Какие приложения показывают уведомления на острове. Пустой список — показывать все.", "Which apps show notifications on the island. An empty list shows all apps.")) {
+        SectionHeader(tr("Режим", "Mode"))
         Group {
             GroupToggle(
                 Pos.Single, Icons.Rounded.Checklist,
-                tr("Только выбранные приложения", "Selected apps only", "Hanya aplikasi terpilih"),
-                tr("Выкл — показывать уведомления всех приложений. Вкл — только отмеченных ниже.", "Off — show notifications from all apps. On — only from those checked below.", "Mati — tampilkan notifikasi semua aplikasi. Aktif — hanya yang dicentang di bawah."),
+                tr("Только выбранные приложения", "Selected apps only"),
+                tr("Выкл — показывать уведомления всех приложений. Вкл — только отмеченных ниже.", "Off — show notifications from all apps. On — only from those checked below."),
                 selected.isNotEmpty(), color = Tile.Purple,
             ) { v ->
                 if (v) {
@@ -101,15 +100,14 @@ fun AppFilterScreen(onBack: () -> Unit) {
         SectionHeader(tr("Приложения (${filtered.size})", "Apps (${filtered.size})"))
         if (selected.isNotEmpty()) {
             Text(
-                tr("Выбрано: %d. Приложения ниже можно включать и выключать одним нажатием.", "Selected: %d. Toggle apps below with one tap.", "Dipilih: %d. Aplikasi di bawah bisa diaktifkan/dinonaktifkan dengan satu ketukan.").format(selected.size),
+                tr("Выбрано: %d. Приложения ниже можно включать и выключать одним нажатием.", "Selected: %d. Toggle apps below with one tap.").format(selected.size),
                 color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             )
         }
 
-        // Поиск
         TextField(
             value = query, onValueChange = { query = it },
-            placeholder = { Text(tr("Поиск приложения…", "Search apps…", "Cari aplikasi…"), color = Ui.Sub) },
+            placeholder = { Text(tr("Поиск приложения…", "Search apps…"), color = Ui.Sub) },
             leadingIcon = { Icon(Icons.Rounded.Search, null, tint = Ui.Sub) },
             singleLine = true,
             colors = TextFieldDefaults.colors(
@@ -120,7 +118,6 @@ fun AppFilterScreen(onBack: () -> Unit) {
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp).clip(RoundedCornerShape(16.dp)),
         )
 
-        // Список в обычном Column: Page уже скроллится, LazyColumn внутри дал бы бесконечную высоту и краш
         Column(modifier = Modifier.fillMaxWidth()) {
             for (app in filtered) {
                 val on = app.pkg in selected

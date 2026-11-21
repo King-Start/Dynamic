@@ -117,6 +117,7 @@ import com.style.island.ui.screens.IdeaScreen
 import com.style.island.ui.screens.InstructionScreen
 import com.style.island.ui.screens.KeepAliveScreen
 import com.style.island.ui.screens.LookScreen
+import com.style.island.ui.screens.StyleScreen
 import com.style.island.ui.screens.LyricsScreen
 import com.style.island.ui.screens.LauncherScreen
 import com.style.island.ui.screens.NotificationsScreen

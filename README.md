@@ -45,7 +45,14 @@ Proyek Gradle standar (AGP 8.7, Kotlin 2.1, Compose, minSdk 26):
 ./gradlew assembleRelease
 ```
 
-GitHub Actions membangun APK di setiap push. Untuk APK bertanda tangan, isi secret `KEYSTORE_BASE64` dan `KEYSTORE_PASSWORD` (alias kunci `island`, format PKCS12). Opsional: variabel repo `SIGNING_CERT_SHA256` untuk mengunci sidik jari sertifikat.
+GitHub Actions membangun APK di setiap push. Tanpa kunci, APK tetap dibuat dengan kunci sementara dan hanya jadi artefak (tidak dirilis, dan update antar-build mengharuskan uninstall dulu). Untuk rilis dan update yang mulus, buat kunci tetap sekali saja:
+
+```bash
+keytool -genkeypair -v -keystore island.p12 -storetype PKCS12 -alias island -keyalg RSA -keysize 2048 -validity 10000
+base64 -w0 island.p12
+```
+
+Lalu di repo buka Settings → Secrets and variables → Actions dan isi secret `KEYSTORE_BASE64` (hasil `base64`) dan `KEYSTORE_PASSWORD` (kata sandi kunci). Simpan file `island.p12` di tempat aman: kalau hilang, update tidak bisa lagi dipasang di atas versi lama. Opsional: variabel repo `SIGNING_CERT_SHA256` untuk mengunci sidik jari sertifikat.
 
 Untuk merilis versi baru, naikkan `versionName` dan `versionCode` di `app/build.gradle.kts` lalu tambahkan bagian `## [x.y.z]` di `CHANGELOG.md` dan `CHANGELOG.en.md`.
 

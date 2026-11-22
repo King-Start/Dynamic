@@ -45,7 +45,14 @@ Standard Gradle project (AGP 8.7, Kotlin 2.1, Compose, minSdk 26):
 ./gradlew assembleRelease
 ```
 
-GitHub Actions builds an APK on every push. For a signed APK add the secrets `KEYSTORE_BASE64` and `KEYSTORE_PASSWORD` (key alias `island`, PKCS12). Optional: the repository variable `SIGNING_CERT_SHA256` pins the certificate fingerprint.
+GitHub Actions builds an APK on every push. Without a key the APK is still built with a temporary key and kept only as an artifact (no release, and updating between builds needs an uninstall first). For releases and smooth updates, create a permanent key once:
+
+```bash
+keytool -genkeypair -v -keystore island.p12 -storetype PKCS12 -alias island -keyalg RSA -keysize 2048 -validity 10000
+base64 -w0 island.p12
+```
+
+Then in the repository open Settings → Secrets and variables → Actions and add the secrets `KEYSTORE_BASE64` (the `base64` output) and `KEYSTORE_PASSWORD` (the key password). Keep `island.p12` somewhere safe: if you lose it, updates can no longer be installed over older versions. Optional: the repository variable `SIGNING_CERT_SHA256` pins the certificate fingerprint.
 
 To publish a new version, raise `versionName` and `versionCode` in `app/build.gradle.kts` and add a `## [x.y.z]` section to `CHANGELOG.md` and `CHANGELOG.en.md`.
 

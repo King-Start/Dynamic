@@ -16,6 +16,7 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 - App theme redesigned: neutral dark palette with one teal accent, tinted icon tiles, flatter cards with hairline borders, simpler switches. The tab selector is now a white liquid-glass pill that follows your finger when pressed and dragged.
 - The small circle beside the capsule follows the chosen layout (accent ring or tinted disc).
 - Layouts also cover hotspot, weather and navigation/ride activities.
+- Restored from the previous version: Which apps to show (notification app filter), Per-feature style (style, layout, animation and colour for each island event), the HyperIsland glass settings and the Shizuku access section.
 - HyperIsland style is available again.
 - All island icons redrawn as one consistent rounded line set; new app icon.
 

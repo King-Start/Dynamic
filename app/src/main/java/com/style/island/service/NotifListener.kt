@@ -140,8 +140,17 @@ class NotifListener : NotificationListenerService() {
 object NotificationParser {
     private val icons = HashMap<String, ImageBitmap?>()
 
+    /** Kanal sistem yang selalu tampil walau aplikasinya tidak dipilih di filter: panggilan, alarm, pemutar. */
+    private fun isCritical(sbn: StatusBarNotification): Boolean =
+        sbn.notification?.category == Notification.CATEGORY_CALL ||
+            sbn.notification?.category == Notification.CATEGORY_ALARM ||
+            sbn.notification?.category == Notification.CATEGORY_TRANSPORT
+
     fun onPosted(context: Context, sbn: StatusBarNotification, initial: Boolean = false) {
         if (sbn.packageName == context.packageName) return
+        // Filter aplikasi (Fitur → Aplikasi mana yang ditampilkan): kosong = semua aplikasi
+        val allowed = SettingsRepo.current.notifApps
+        if (allowed.isNotEmpty() && sbn.packageName !in allowed && !isCritical(sbn)) return
         val n = sbn.notification ?: return
         val ex = n.extras ?: return
         val isMedia = mediaNotificationEvidence(n.category,

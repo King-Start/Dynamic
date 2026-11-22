@@ -119,6 +119,8 @@ import com.style.island.data.Elasticity
 import com.style.island.data.MessageStyle
 import com.style.island.data.ExpandStyle
 import com.style.island.data.IslandSettings
+import com.style.island.data.layoutFor
+import com.style.island.data.styleFor
 import com.style.island.data.SettingsRepo
 import com.style.island.data.shouldTimeOutIdle
 import com.style.island.data.TapAction
@@ -514,10 +516,12 @@ private fun BubbleSlot(slot: State<Dp>, visible: Boolean, act: Act?, s: IslandSe
             },
     ) {
         val drop = TransformOrigin(if (left) 1f else 0f, 0.5f)
+        // Animasi muncul lingkaran kecil bisa diatur per fitur (Gaya per fitur), kalau tidak pakai animasi umum
+        val fx = act?.id?.let { s.featureAnims[it] }?.let { featureAnim(it) }
         AnimatedVisibility(
             visible && act != null,
-            enter = if (s.reduceEffects) fadeIn() else scaleIn(islandSpec(s), initialScale = 0.4f, transformOrigin = drop) + fadeIn(tween(90)),
-            exit = if (s.reduceEffects) fadeOut() else scaleOut(islandSpec(s), targetScale = 0.4f, transformOrigin = drop) + fadeOut(tween(120, delayMillis = 60)),
+            enter = if (s.reduceEffects) fadeIn() else (fx?.first ?: (scaleIn(islandSpec(s), initialScale = 0.4f, transformOrigin = drop) + fadeIn(tween(90)))),
+            exit = if (s.reduceEffects) fadeOut() else (fx?.second ?: (scaleOut(islandSpec(s), targetScale = 0.4f, transformOrigin = drop) + fadeOut(tween(120, delayMillis = 60)))),
         ) {
             if (act != null) Box(Modifier.onGloballyPositioned {
                 onBounds(if (visible) it.boundsInWindow() else Rect.Zero)
@@ -573,7 +577,9 @@ internal fun IslandBody(
     // Скругление читается при рисовании: кадр раскрытия перерисовывает рамку и стекло, а не пересобирает остров
     val corner = animateDpAsState(cornerTarget, islandSpec(s), label = "corner")
     val shape = remember(corner, s.notch, s.notchTopRadius) { AnimatedIslandShape(corner, s.notch, s.notchTopRadius) }
-    val accent = primary.surfaceAccent()
+    val accent = s.accentFor(primary)
+    // Gaya per fitur: fitur ini bisa punya gaya permukaan sendiri
+    val surfaceSettings = remember(s, primary.id) { if (s.featureStyles[primary.id] == null) s else s.copy(style = s.styleFor(primary.id)) }
 
     // Свечение цвета обложки, пока играет музыка («Эффекты»): с треком цвет плавно меняется, с паузой гаснет
     val playingArt = (primary as? Act.MediaA)?.m?.takeIf { it.playing }?.accent
@@ -679,7 +685,7 @@ internal fun IslandBody(
             .then(if (glowAlpha > 0f) Modifier.drawBehind { islandGlow(glowTint, glowAlpha, corner.value.toPx(), s.notch) } else Modifier)
             .then(
                 if (calibrating) Modifier.clip(shape).background(CalibrationRed).border(2.dp, Color.White, shape)
-                else Modifier.islandSurface(s, large, shape, accent, tilt = { previewTilt ?: tilt.value }, sheen = { sheen.value }),
+                else Modifier.islandSurface(surfaceSettings, large, shape, accent, tilt = { previewTilt ?: tilt.value }, sheen = { sheen.value }),
             )
             .then(
                 if (egg && !calibrating) {
@@ -992,6 +998,9 @@ private fun perform(context: Context, action: TapAction, act: Act) {
 }
 
 /** Вторая активность — круглый пузырь справа от острова. */
+/** Warna aksen satu fitur: pilihan pengguna di Gaya per fitur, kalau tidak warna aktivitas. */
+private fun IslandSettings.accentFor(act: Act): Color? = featureColors[act.id]?.let { Color(it) } ?: act.surfaceAccent()
+
 private fun Act.surfaceAccent(): Color? = when (this) {
     is Act.MediaA -> m.accent
     is Act.NoticeA -> n.message?.accent ?: n.tint
@@ -1041,7 +1050,7 @@ private fun BubbleContent(act: Act, s: IslandSettings) {
     Box(
         Modifier
             .size(h)
-            .islandSurface(s, false, CircleShape, act.surfaceAccent(), tilt = { previewTilt ?: tilt.value })
+            .islandSurface(if (s.featureStyles[act.id] == null) s else s.copy(style = s.styleFor(act.id)), false, CircleShape, s.accentFor(act), tilt = { previewTilt ?: tilt.value })
             .clickable {
                 haptic()
                 Controls.expand(act.id)
@@ -1051,10 +1060,10 @@ private fun BubbleContent(act: Act, s: IslandSettings) {
         val inner: Dp = h * 0.62f
         // Lingkaran kecil ikut tata letak yang dipilih: Cincin = cincin aksen, lainnya = latar aksen tipis
         val ringAccent = bubbleAccent(act)
-        if (ringAccent != null && s.layout != com.style.island.data.IslandLayout.CLASSIC) {
+        if (ringAccent != null && s.layoutFor(act.id) != com.style.island.data.IslandLayout.CLASSIC) {
             androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
                 val sw = 2.dp.toPx()
-                if (s.layout == com.style.island.data.IslandLayout.RING) {
+                if (s.layoutFor(act.id) == com.style.island.data.IslandLayout.RING) {
                     drawCircle(ringAccent.copy(alpha = 0.6f), radius = size.minDimension / 2 - sw, style = androidx.compose.ui.graphics.drawscope.Stroke(sw))
                 } else {
                     drawCircle(ringAccent.copy(alpha = 0.16f), radius = size.minDimension / 2 - sw)

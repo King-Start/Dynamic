@@ -46,7 +46,7 @@ fun Modifier.islandSurface(
                         tilt = { if (s.reduceEffects) GlassTilt.Zero else tilt() },
                         sheen = { if (s.reduceEffects) -1f else sheen() }) else Modifier.background(fill)
                 // Gaya lain menggambar badannya sendiri; aksen = warna aktivitas, atau biru lembut bila tidak ada
-                IslandStyle.HYPERISLAND -> Modifier.hyperSurface(shape, base, s.glassOpacity / 100f, highlight = !s.reduceEffects)
+                IslandStyle.HYPERISLAND -> Modifier.hyperSurface(shape, base, s.glassOpacity / 100f, lightIntensity = s.hyperLight, highlight = s.hyperHighlight && !s.reduceEffects)
                 IslandStyle.NEON -> Modifier.neonSurface(shape, styleTint, glow = !s.reduceEffects)
                 IslandStyle.GRADIENT -> Modifier.gradientSurface(shape, styleTint)
                 IslandStyle.IPHONE -> Modifier.iphoneSurface(shape)

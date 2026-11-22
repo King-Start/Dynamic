@@ -112,6 +112,7 @@ import com.style.island.core.formatDuration
 import com.style.island.data.IslandLayout
 import com.style.island.data.IslandSettings
 import com.style.island.data.NoticeDesign
+import com.style.island.data.layoutFor
 import com.style.island.data.MessageStyle
 import com.style.island.data.MessageIconMode
 import com.style.island.data.MessageIconPosition
@@ -172,10 +173,11 @@ private fun CompactContentBody(act: Act, s: IslandSettings, wideWidth: Dp) {
     val side = sideMax(s)
     val icon = h * 0.5f
     // Tata letak alternatif (Cincin, Berlabel, Dua baris, Garis, Mungil) untuk keadaan yang punya "wajah" sederhana
-    if (s.layout != IslandLayout.CLASSIC) {
+    val layout = s.layoutFor(act.id)
+    if (layout != IslandLayout.CLASSIC) {
         val face = rememberFace(act, s)
         if (face != null) {
-            FaceLayout(s.layout, face, s, wideWidth)
+            FaceLayout(layout, face, s, wideWidth)
             return
         }
     }
@@ -281,7 +283,7 @@ private fun CompactContentBody(act: Act, s: IslandSettings, wideWidth: Dp) {
         }
 
         is Act.CallA -> if (act.c.incoming) {
-            if (s.layout == IslandLayout.CLASSIC) IncomingCall(act.c, s, wideWidth) else IncomingCallVariant(s.layout, act.c, s, wideWidth)
+            if (layout == IslandLayout.CLASSIC) IncomingCall(act.c, s, wideWidth) else IncomingCallVariant(layout, act.c, s, wideWidth)
         } else {
             val now = rememberWallNow(500)
             CompactRow(h, gap, side * 2f,

@@ -117,6 +117,8 @@ import com.style.island.ui.screens.IdeaScreen
 import com.style.island.ui.screens.InstructionScreen
 import com.style.island.ui.screens.KeepAliveScreen
 import com.style.island.ui.screens.LookScreen
+import com.style.island.ui.screens.AppFilterScreen
+import com.style.island.ui.screens.FeatureStylesScreen
 import com.style.island.ui.screens.StyleScreen
 import com.style.island.ui.screens.LyricsScreen
 import com.style.island.ui.screens.LauncherScreen
@@ -133,7 +135,7 @@ import com.style.island.update.UpdateChecker
 
 enum class Screen {
     CARDS, EVENTS, GESTURES, LYRICS, SIZE, COLORS, INSTRUCTION, ABOUT, DIAG, LOOK, ANIM, EFFECTS, BANNERS,
-    STYLE, PERMISSIONS, TESTS, NOTIFICATIONS, BEHAVIOR, PAYDIAG, KEEPALIVE, BANKS, NOTIF_APPS, NOTIF_DIAG, FONT, EXTRAS, SEARCH, LAUNCHER, SUPPORT,
+    STYLE, APPS, FEATURE_STYLES, PERMISSIONS, TESTS, NOTIFICATIONS, BEHAVIOR, PAYDIAG, KEEPALIVE, BANKS, NOTIF_APPS, NOTIF_DIAG, FONT, EXTRAS, SEARCH, LAUNCHER, SUPPORT,
 }
 
 class MainActivity : ComponentActivity() {
@@ -238,7 +240,9 @@ private fun AppRoot(launcherSettingsRequest: Int) {
                     Screen.LAUNCHER.name -> LauncherScreen(back)
                     Screen.BANKS.name -> BanksScreen(back)
                     Screen.LOOK.name -> LookScreen(back)
-                    Screen.STYLE.name -> StyleScreen(back)
+                    Screen.STYLE.name -> StyleScreen(back, open)
+                    Screen.APPS.name -> AppFilterScreen(back)
+                    Screen.FEATURE_STYLES.name -> FeatureStylesScreen(back)
                     Screen.ANIM.name -> AnimScreen(back)
                     Screen.EFFECTS.name -> EffectsScreen(back)
                     Screen.BANNERS.name -> BannersScreen(back)

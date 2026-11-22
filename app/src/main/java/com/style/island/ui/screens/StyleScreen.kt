@@ -17,6 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoFixHigh
 import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.NotificationsActive
+import com.style.island.shizuku.ShizukuBridge
 import androidx.compose.material.icons.rounded.ViewAgenda
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +50,7 @@ import com.style.island.ui.*
  * gaya permukaan, dan tata letak isi island. Pratinjau langsung di atas ikut berubah.
  */
 @Composable
-fun StyleScreen(onBack: () -> Unit) {
+fun StyleScreen(onBack: () -> Unit, open: (Screen) -> Unit = {}) {
     val s by SettingsRepo.state.collectAsState()
     var scene by rememberSaveable { mutableStateOf(PreviewScene.MESSAGE) }
     var presetDialog by rememberSaveable { mutableStateOf(false) }
@@ -69,6 +74,64 @@ fun StyleScreen(onBack: () -> Unit) {
                 "Applies to notifications shown as a card. Replies and buttons work in every design."),
             color = Ui.Sub, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 6.dp),
         )
+
+        SectionHeader(tr("Уведомления", "Notifications"))
+        Group {
+            GroupItem(
+                Pos.Single, Icons.Rounded.NotificationsActive,
+                tr("Какие приложения показывать", "Which apps to show"),
+                tr("Выбор приложений: только WhatsApp, Discord и другие — или все подряд.", "Choose apps: only WhatsApp, Discord and others — or everything."),
+                color = Tile.Purple, badge = if (s.notifApps.isEmpty()) tr("Все", "All") else "${s.notifApps.size}",
+                onClick = { open(Screen.APPS) },
+            ) { Arrow() }
+        }
+
+        SectionHeader(tr("Стиль по фичам", "Per-feature style"))
+        Group {
+            GroupItem(
+                Pos.Single, Icons.Rounded.Palette,
+                tr("Стиль для каждой фичи", "Style per feature"),
+                tr("У каждого события острова (звонок, зарядка, музыка…) свой стиль, раскладка, анимация и цвет.",
+                    "Each island event (call, charging, music…) has its own style, layout, animation and colour."),
+                color = Tile.Purple,
+                onClick = { open(Screen.FEATURE_STYLES) },
+            ) { Arrow() }
+        }
+
+        if (s.style == IslandStyle.HYPERISLAND) {
+            SectionHeader(tr("Стекло HyperIsland", "HyperIsland glass"))
+            Group {
+                GroupToggle(
+                    Pos.First, Icons.Rounded.AutoAwesome, tr("Яркая кромка", "Bright edge"),
+                    tr("Тонкий светлый контур и линия по верхней грани", "Thin light outline and a line along the top edge"),
+                    s.hyperHighlight, color = Tile.Pink,
+                ) { v -> SettingsRepo.update { copy(hyperHighlight = v) } }
+                GroupSlider(
+                    Pos.Last, Icons.Rounded.LightMode, tr("Сила света", "Light strength"),
+                    value = s.hyperLight, range = 0f..1f, label = "${(s.hyperLight * 100).toInt()}%",
+                    steps = 9, color = Tile.Orange,
+                ) { v -> SettingsRepo.update { copy(hyperLight = v) } }
+            }
+        }
+
+        SectionHeader(tr("Доступ к системе", "System access"))
+        Group {
+            val mode = ShizukuBridge.privilegeName
+            GroupItem(
+                Pos.First, Icons.Rounded.DarkMode, tr("Без root", "No root"),
+                tr("Обычный overlay-режим доступен всегда", "Regular overlay mode is always available"),
+                color = Tile.Green,
+            )
+            GroupItem(
+                Pos.Last, Icons.Rounded.AutoAwesome, tr("Shizuku / HyperOS", "Shizuku / HyperOS"),
+                tr("Сейчас: %s. Shizuku даёт права системы без root; путь HyperIsland (LSPosed) активен на HyperOS".format(mode),
+                    "Now: %s. Shizuku gives system rights without root; the HyperIsland path (LSPosed) is active on HyperOS".format(mode)),
+                color = Tile.Blue, badge = if (ShizukuBridge.isXiaomi) "HyperOS" else null,
+            )
+        }
+        if (ShizukuBridge.available && !ShizukuBridge.granted) {
+            PillAction(tr("Запросить доступ Shizuku", "Request Shizuku access")) { ShizukuBridge.requestPermission() }
+        }
 
         SectionHeader(tr("Материал и раскладка", "Material and layout"))
         Group {

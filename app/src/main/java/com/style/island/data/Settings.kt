@@ -166,6 +166,19 @@ enum class IslandPreset(
     val title: String get() = tr(ru, en)
 }
 
+/** Animasi muncul/hilang per fitur (lingkaran kecil di samping kapsul). */
+@Serializable
+enum class FeatureAnim(private val ru: String, private val en: String) {
+    BOUNCE("Пружина", "Bounce"),
+    SLIDE("Слайд", "Slide"),
+    SCALE("Пульс", "Pulse"),
+    SWIPE("Шторка", "Swipe"),
+    GLOW("Свечение", "Glow"),
+    ;
+
+    val title: String get() = tr(ru, en)
+}
+
 /** Как выглядит уведомление приложения: большая карточка или маленькая пилюля у камеры. */
 @Serializable
 enum class MessageStyle(private val ru: String, private val en: String, private val hintRu: String, private val hintEn: String) {
@@ -379,6 +392,20 @@ data class IslandSettings(
     val reduceEffects: Boolean = false,
     /** Gaya permukaan island (bahan dan warna badan) */
     val style: IslandStyle = IslandStyle.AKIRA,
+    /** Gaya per fitur (kunci = Act.id). Kosong = ikut [style]. */
+    val featureStyles: Map<String, IslandStyle> = emptyMap(),
+    /** Tata letak isi per fitur (kunci = Act.id). Kosong = ikut [layout]. */
+    val featureLayouts: Map<String, IslandLayout> = emptyMap(),
+    /** Animasi muncul/hilang per fitur (kunci = Act.id). Kosong = animasi umum. */
+    val featureAnims: Map<String, FeatureAnim> = emptyMap(),
+    /** Warna aksen (tepi/cahaya) per fitur, ARGB. Kosong = warna aktivitas atau warna island. */
+    val featureColors: Map<String, Int> = emptyMap(),
+    /** Aplikasi yang boleh menampilkan notifikasi di island. Kosong = semua aplikasi. */
+    val notifApps: Set<String> = emptySet(),
+    /** HyperIsland: tepi terang dan garis di sisi atas */
+    val hyperHighlight: Boolean = true,
+    /** HyperIsland: kekuatan cahaya terarah dari atas (0..1) */
+    val hyperLight: Float = 1f,
     /** Tata letak isi island: keadaan seperti musik, timer, pengisian, panggilan */
     val layout: IslandLayout = IslandLayout.RING,
     /** Desain kartu notifikasi aplikasi */
@@ -653,3 +680,10 @@ object SettingsRepo {
         )
     }
 }
+
+
+/** Tata letak untuk satu fitur: override fitur itu kalau ada, kalau tidak ikut tata letak global. */
+fun IslandSettings.layoutFor(id: String): IslandLayout = featureLayouts[id] ?: layout
+
+/** Gaya untuk satu fitur: override fitur itu kalau ada, kalau tidak ikut gaya global. */
+fun IslandSettings.styleFor(id: String): IslandStyle = featureStyles[id] ?: style

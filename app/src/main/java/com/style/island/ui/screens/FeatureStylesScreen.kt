@@ -100,7 +100,6 @@ fun FeatureStylesScreen(onBack: () -> Unit) {
         subtitle = tr(
             "У каждого события острова (звонок, зарядка, музыка…) теперь свой стиль, анимация и цвет. Нажмите на фичу.",
             "Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature.",
-            "Setiap event island (panggilan, pengisian, musik…) kini punya gaya, animasi, dan warna sendiri. Tekan fitur.",
         )) {
         SectionHeader(tr("Стиль, анимация и цвет", "Style, animation & color"))
         Group {

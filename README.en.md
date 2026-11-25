@@ -5,7 +5,7 @@
 <h1 align="center">Dynamic Island for Android</h1>
 
 <p align="center">
-A Dynamic Island–style capsule around the camera of any Android phone, with eight notification designs, six content layouts and several island styles.
+A Dynamic Island–style capsule around the camera of any Android phone, with thirteen notification designs, six content layouts and several island styles.
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@ Notifications with reply · navigation · payments · music with synced lyrics �
 
 ## Notification designs
 
-App notification cards come in eight genuinely different forms, not just effects: Classic, Card, Ticker (scrolling text beside the camera), Chat, Banner, Split, Headline and Badge. Replies and action buttons work in every design. Pick one from the live gallery in **Appearance → Theme and layout**, or use **Ready-made themes** to set style, layout and notifications at once.
+App notification cards come in thirteen genuinely different forms, not just effects: Classic, Card, Ticker (scrolling text beside the camera), Chat, Banner, Split, Headline, Spotlight, Stacked, Terminal, Timeline, Text only and Badge. Replies and action buttons work in every design. Pick one from the live gallery in **Appearance → Theme and layout**, or use **Ready-made themes** to set style, layout and notifications at once.
 
 ## Layouts and styles
 

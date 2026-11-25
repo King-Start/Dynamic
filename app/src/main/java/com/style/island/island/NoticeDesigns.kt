@@ -32,7 +32,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -51,6 +53,8 @@ class MsgView(
     val accent: Color,
     val count: Int = 1,
     val time: String,
+    /** Pesan sebelumnya dari percakapan yang sama (terbaru di akhir); dipakai desain Tumpuk. */
+    val history: List<String> = emptyList(),
 )
 
 private val Dim = Color.White.copy(alpha = 0.55f)
@@ -102,20 +106,25 @@ fun NoticeDesignBody(
                 }
             }
             Spacer(Modifier.height((top - s.height.dp).coerceAtLeast(4.dp)))
-            Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.Top) {
-                Pic(v, 40.dp, CircleShape)
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(v.title, color = Color.White, fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(v.text, color = Color.White.copy(alpha = 0.88f), fontSize = 14.sp, lineHeight = 19.sp, maxLines = lines, overflow = TextOverflow.Ellipsis)
+            Scaled(s.contentScale) {
+                Column {
+                    Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.Top) {
+                        Pic(v, 40.dp, CircleShape)
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(v.title, color = Color.White, fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(v.text, color = Color.White.copy(alpha = 0.88f), fontSize = 14.sp, lineHeight = 19.sp, maxLines = lines, overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                    Box(Modifier.padding(start = 68.dp, end = 16.dp)) { footer() }
                 }
             }
-            Box(Modifier.padding(start = 68.dp, end = 16.dp)) { footer() }
         }
 
         // Kartu: ikon kotak membulat besar, judul tebal, teks dua baris; aksi berupa tombol kapsul
         NoticeDesign.CARD -> Column(Modifier.width(width).padding(horizontal = 16.dp).padding(bottom = 14.dp)) {
             Spacer(Modifier.height(top))
+            Scaled(s.contentScale) { Column {
             Row(verticalAlignment = Alignment.Top) {
                 Pic(v, 48.dp, RoundedCornerShape(15.dp))
                 Spacer(Modifier.width(12.dp))
@@ -129,6 +138,7 @@ fun NoticeDesignBody(
                 }
             }
             Box(Modifier.padding(start = 60.dp)) { footer() }
+            } }
         }
 
         // Ticker: kapsul tipis; nama pengirim di kiri kamera, teks berjalan di kanan kamera
@@ -168,6 +178,7 @@ fun NoticeDesignBody(
                 }
             }
             Spacer(Modifier.height((top - s.height.dp).coerceAtLeast(2.dp)))
+            Scaled(s.contentScale) { Column {
             Box(Modifier.padding(horizontal = 14.dp)) {
                 Box(
                     Modifier.clip(RoundedCornerShape(20.dp, 20.dp, 20.dp, 6.dp))
@@ -178,11 +189,13 @@ fun NoticeDesignBody(
                 }
             }
             Box(Modifier.padding(start = 14.dp, end = 14.dp, top = 6.dp)) { footer() }
+            } }
         }
 
         // Spanduk: garis warna di kiri, nama aplikasi berhuruf kapital berwarna aksen
         NoticeDesign.BANNER -> Column(Modifier.width(width).padding(horizontal = 18.dp).padding(bottom = 14.dp)) {
             Spacer(Modifier.height(top))
+            Scaled(s.contentScale) {
             Row(Modifier.height(IntrinsicSize.Min)) {
                 Box(Modifier.width(4.dp).fillMaxHeight().clip(RoundedCornerShape(2.dp)).background(v.accent))
                 Spacer(Modifier.width(12.dp))
@@ -199,11 +212,13 @@ fun NoticeDesignBody(
                     footer()
                 }
             }
+            }
         }
 
         // Terbelah: blok warna aksen berisi ikon di kiri, teks di kanan
         NoticeDesign.SPLIT -> Column(Modifier.width(width).padding(horizontal = 14.dp).padding(bottom = 14.dp)) {
             Spacer(Modifier.height(top))
+            Scaled(s.contentScale) {
             Row(Modifier.height(IntrinsicSize.Min)) {
                 Box(
                     Modifier.width(72.dp).fillMaxHeight().heightIn(min = 72.dp)
@@ -219,11 +234,13 @@ fun NoticeDesignBody(
                     footer()
                 }
             }
+            }
         }
 
         // Judul besar: murni tipografi, tanpa ikon; garis aksen pendek sebagai penanda
         NoticeDesign.HEADLINE -> Column(Modifier.width(width).padding(horizontal = 22.dp).padding(bottom = 18.dp)) {
             Spacer(Modifier.height(top))
+            Scaled(s.contentScale) { Column {
             Text(v.appName.uppercase() + "   ·   " + v.time, color = Dim, fontSize = 11.sp, letterSpacing = 1.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(6.dp))
             Text(v.title, color = Color.White, fontSize = 22.sp, lineHeight = 26.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -232,6 +249,101 @@ fun NoticeDesignBody(
             Spacer(Modifier.height(8.dp))
             Text(v.text, color = Color.White.copy(alpha = 0.78f), fontSize = 15.sp, lineHeight = 21.sp, maxLines = lines, overflow = TextOverflow.Ellipsis)
             footer()
+            } }
+        }
+
+        // Sorotan: semua di tengah, foto bulat besar di atas
+        NoticeDesign.SPOTLIGHT -> Column(Modifier.width(width).padding(horizontal = 20.dp).padding(bottom = 16.dp)) {
+            Spacer(Modifier.height(top))
+            Scaled(s.contentScale) {
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Pic(v, 56.dp, CircleShape)
+                    Spacer(Modifier.height(8.dp))
+                    Text(v.title, color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+                    Text(v.appName + "  ·  " + v.time, color = Dim, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(6.dp))
+                    Text(v.text, color = Color.White.copy(alpha = 0.85f), fontSize = 15.sp, lineHeight = 20.sp, maxLines = lines, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+                    footer()
+                }
+            }
+        }
+
+        // Tumpuk: beberapa pesan terakhir dari percakapan yang sama sebagai daftar bertitik
+        NoticeDesign.STACKED -> Column(Modifier.width(width).padding(horizontal = 16.dp).padding(bottom = 14.dp)) {
+            Spacer(Modifier.height(top))
+            Scaled(s.contentScale) {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Pic(v, 28.dp, CircleShape)
+                        Spacer(Modifier.width(8.dp))
+                        Text(v.title, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                        if (v.count > 1) {
+                            Box(Modifier.clip(CircleShape).background(v.accent).padding(horizontal = 7.dp, vertical = 2.dp), contentAlignment = Alignment.Center) {
+                                Text(v.count.toString(), color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    val rows = v.history.takeLast(3).ifEmpty { listOf(v.text) }
+                    rows.forEachIndexed { i, line ->
+                        val last = i == rows.lastIndex
+                        Row(Modifier.padding(bottom = 4.dp), verticalAlignment = Alignment.Top) {
+                            Box(Modifier.padding(top = 8.dp).size(5.dp).clip(CircleShape).background(if (last) v.accent else Dim))
+                            Spacer(Modifier.width(8.dp))
+                            Text(line, color = Color.White.copy(alpha = if (last) 0.95f else 0.55f), fontSize = 14.sp, lineHeight = 19.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                    footer()
+                }
+            }
+        }
+
+        // Terminal: huruf monospasi seperti baris perintah
+        NoticeDesign.TERMINAL -> Column(Modifier.width(width).padding(horizontal = 18.dp).padding(bottom = 14.dp)) {
+            Spacer(Modifier.height(top))
+            Scaled(s.contentScale) {
+                Column {
+                    Text("> " + v.appName.lowercase() + "  " + v.time, color = v.accent, fontSize = 11.sp, fontFamily = FontFamily.Monospace, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Spacer(Modifier.height(6.dp))
+                    Text(v.title + ":", color = Color.White, fontSize = 15.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(v.text, color = Color.White.copy(alpha = 0.82f), fontSize = 13.sp, lineHeight = 18.sp, fontFamily = FontFamily.Monospace, maxLines = lines, overflow = TextOverflow.Ellipsis)
+                    footer()
+                }
+            }
+        }
+
+        // Lini masa: titik dan garis vertikal di kiri, waktu di atas
+        NoticeDesign.TIMELINE -> Column(Modifier.width(width).padding(horizontal = 18.dp).padding(bottom = 14.dp)) {
+            Spacer(Modifier.height(top))
+            Scaled(s.contentScale) {
+                Row(Modifier.height(IntrinsicSize.Min)) {
+                    Column(Modifier.fillMaxHeight().width(14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(Modifier.size(10.dp).clip(CircleShape).background(v.accent))
+                        Box(Modifier.width(2.dp).weight(1f).background(Color.White.copy(alpha = 0.14f)))
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(v.time, color = Dim, fontSize = 11.sp, maxLines = 1)
+                        Text(v.title, color = Color.White, fontSize = 16.sp, lineHeight = 21.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(v.text, color = Color.White.copy(alpha = 0.80f), fontSize = 14.sp, lineHeight = 19.sp, maxLines = lines, overflow = TextOverflow.Ellipsis)
+                        Text(v.appName, color = Dim, fontSize = 11.5.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
+                        footer()
+                    }
+                }
+            }
+        }
+
+        // Hanya teks: kapsul tipis tanpa ikon, pengirim di kiri kamera dan pesan di kanan
+        NoticeDesign.TEXT -> Column(Modifier.width(width * 0.9f)) {
+            Row(
+                Modifier.fillMaxWidth().height(activeHeight(s) + 4.dp).padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(v.title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                Spacer(Modifier.width(gap))
+                Text(v.text.replace('\n', ' '), color = Color.White.copy(alpha = 0.72f), fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+            }
+            Box(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) { footer() }
         }
 
         // Lencana: kapsul kecil berisi foto dan judul, plus jumlah pesan

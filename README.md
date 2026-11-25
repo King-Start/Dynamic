@@ -5,7 +5,7 @@
 <h1 align="center">Dynamic Island untuk Android</h1>
 
 <p align="center">
-Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan delapan desain notifikasi, enam tata letak isi, dan beberapa gaya island.
+Kapsul ala Dynamic Island di sekitar kamera HP Android mana pun, dengan tiga belas desain notifikasi, enam tata letak isi, dan beberapa gaya island.
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@ Notifikasi dengan balasan · navigasi · pembayaran · musik dengan lirik sinkro
 
 ## Desain notifikasi
 
-Kartu notifikasi aplikasi punya delapan desain dengan bentuk yang berbeda, bukan sekadar efek: Klasik, Kartu, Ticker (teks berjalan di samping kamera), Obrolan, Spanduk, Terbelah, Judul besar, dan Lencana. Balasan dan tombol aksi berfungsi di semua desain. Pilih lewat galeri di **Tampilan → Tema dan tata letak**, atau pakai **Tema siap pakai** untuk mengatur gaya, tata letak, dan notifikasi sekaligus.
+Kartu notifikasi aplikasi punya tiga belas desain dengan bentuk yang berbeda, bukan sekadar efek: Klasik, Kartu, Ticker (teks berjalan di samping kamera), Obrolan, Spanduk, Terbelah, Judul besar, Sorotan, Tumpuk, Terminal, Lini masa, Hanya teks, dan Lencana. Balasan dan tombol aksi berfungsi di semua desain. Pilih lewat galeri di **Tampilan → Tema dan tata letak**, atau pakai **Tema siap pakai** untuk mengatur gaya, tata letak, dan notifikasi sekaligus.
 
 ## Tata letak dan gaya
 

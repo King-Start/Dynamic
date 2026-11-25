@@ -9,7 +9,7 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 ## [1.8.0] — 2026-11-20
 
 ### New features
-- Eight notification designs with genuinely different forms: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner (accent stripe), Split (accent block with the icon), Headline (pure typography) and Badge (tiny capsule). Replies and action buttons work in every design. Pick one from the live gallery in Appearance → Theme and layout.
+- Thirteen notification designs with genuinely different forms: Classic, Card, Ticker (scrolling text beside the camera), Chat (message in a bubble), Banner (accent stripe), Split (accent block with the icon), Headline (pure typography), Spotlight (centred), Stacked (last few messages as a list), Terminal (monospace), Timeline, Text only and Badge (tiny capsule). Replies and action buttons work in every design. Pick one from the live gallery in Appearance → Theme and layout.
 - Five content layouts besides Classic: Ring, Labeled, Two lines, Progress bar and Mini. They apply to music, timer, stopwatch, clock, calls, flashlight, downloads and charging, and to the incoming-call card.
 - Ready-made themes (Classic, Studio, Ticker, Chat, Editorial, Banner, Split, Mini) set the style, layout and notification design together.
 - Three new island styles besides Standard: Neon, Gradient, iPhone, Aurora, Sunset and Frost. They follow the activity accent colour and work with the border settings.
@@ -21,6 +21,7 @@ Versioning: the second number (1.5, 1.6…) means new and changed features, the 
 - All island icons redrawn as one consistent rounded line set; new app icon.
 
 ### Fixes
+- The Size and shape sliders (Text and icon size, Maximum height) now also apply to the new notification designs.
 - A phone call no longer shows twice (capsule plus a second counter) when the dialer and the system post two notifications for the same call.
 
 ### Housekeeping

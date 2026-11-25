@@ -634,8 +634,9 @@ internal fun MessageCard(n: Notice, m: AppMessage, s: IslandSettings, @Suppress(
             accent = accent,
             count = if (hidden) 1 else m.history.size,
             time = tr("сейчас", "now"),
+            history = if (hidden) emptyList() else m.history,
         )
-        Box(Modifier.animateContentSize(islandSpec(s))) {
+        Box(Modifier.animateContentSize(islandSpec(s)).heightIn(max = s.expandedMaxHeight.dp)) {
             NoticeDesignBody(s.noticeDesign, view, s, messageWidth(s)) {
                 MessageFooter(
                     n, m, accent, replyAction, locked, preview, s,

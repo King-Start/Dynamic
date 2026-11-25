@@ -937,5 +937,10 @@
 "Regular overlay mode is always available": "Regular overlay mode is always available",
 "Shizuku / HyperOS": "Shizuku / HyperOS",
 "Request Shizuku access": "Request Shizuku access",
-"Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature.": "Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature."
+"Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature.": "Each island event (call, charging, music…) now has its own style, animation and color. Tap a feature.",
+"Spotlight": "Destacado",
+"Stacked": "Apilado",
+"Terminal": "Terminal",
+"Timeline": "Línea de tiempo",
+"Text only": "Solo texto"
 }

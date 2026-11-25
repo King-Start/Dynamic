@@ -128,6 +128,11 @@ enum class NoticeDesign(private val ru: String, private val en: String) {
     BANNER("Баннер", "Banner"),
     SPLIT("Разделённая", "Split"),
     HEADLINE("Заголовок", "Headline"),
+    SPOTLIGHT("В центре", "Spotlight"),
+    STACKED("Стопка", "Stacked"),
+    TERMINAL("Терминал", "Terminal"),
+    TIMELINE("Лента", "Timeline"),
+    TEXT("Только текст", "Text only"),
     BADGE("Значок", "Badge"),
     ;
 
